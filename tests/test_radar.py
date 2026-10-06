@@ -6,6 +6,7 @@ import pytest
 @pytest.fixture(autouse=True)
 def _no_api_key(monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
 
 from radar import __main__ as cli
 from radar import feeds, report
@@ -265,3 +266,40 @@ def test_cli_skips_notification_when_digest_finds_nothing(tmp_path, monkeypatch)
     monkeypatch.setattr(cli.notify, "telegram", lambda *a: pytest.fail("notified"))
     assert cli.main(["--config", str(cfg), "--state", str(state)]) == 0
     assert json.loads(state.read_text())["seen"]["news"] == ["9"]
+
+
+def _fake_cli(monkeypatch, stdout, returncode=0):
+    import subprocess
+    import types
+    from radar import digest
+    calls = []
+
+    def run(cmd, **kw):
+        calls.append((cmd, kw))
+        return types.SimpleNamespace(stdout=stdout, stderr="", returncode=returncode)
+
+    monkeypatch.setattr(digest.shutil, "which", lambda _: "/usr/bin/claude")
+    monkeypatch.setattr(digest.subprocess, "run", run)
+    monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "tok")
+    return calls
+
+
+def test_digest_via_cli_subscription(monkeypatch):
+    from radar import digest
+    payload = {"headline": "h", "releases": [{"name": "Beam", "org": "R", "summary_ko": "s",
+                                              "specs": "", "item_ids": [0]}], "notable": []}
+    calls = _fake_cli(monkeypatch, json.dumps({"is_error": False, "num_turns": 2,
+                                               "structured_output": payload}))
+    d = digest.build([Item("news", "1", "Beam", url="u", group="TC")], {"model": "claude-opus-5-5"})
+    cmd, kw = calls[0]
+    assert "--json-schema" in cmd and cmd[cmd.index("--tools") + 1] == ""
+    assert '"title": "Beam"' in kw["input"]
+    assert d.releases[0].title == "Beam · R"
+
+
+def test_digest_cli_failure_falls_back_to_api(monkeypatch):
+    from radar import digest
+    _fake_cli(monkeypatch, "not json", returncode=1)
+    api_calls = _fake_anthropic(monkeypatch, {"headline": "h", "releases": [], "notable": []})
+    d = digest.build([Item("news", "1", "x")], {})
+    assert d is not None and len(api_calls) == 1

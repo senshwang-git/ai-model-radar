@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
+import subprocess
 from dataclasses import dataclass, field
 
 from .models import Item
@@ -116,16 +118,39 @@ def parse_digest(data: dict, items: list[Item]) -> Digest:
     return Digest(headline=data.get("headline", ""), releases=releases, notable=notable)
 
 
-def build(items: list[Item], cfg: dict) -> Digest | None:
-    """Return a Korean digest, or None when Claude is unavailable or fails."""
-    if not cfg.get("enabled", True) or not items:
+def _call_cli(items: list[Item], cfg: dict) -> dict | None:
+    """Claude Code CLI with CLAUDE_CODE_OAUTH_TOKEN (Pro/Max subscription)."""
+    exe = shutil.which("claude")
+    if not exe:
+        print("[digest] claude CLI not installed")
         return None
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        print("[digest] ANTHROPIC_API_KEY not set, sending raw list instead")
+    cmd = [exe, "-p", "--output-format", "json", "--json-schema", json.dumps(SCHEMA),
+           "--model", cfg.get("model", "claude-opus-5-5"), "--system-prompt", SYSTEM_PROMPT,
+           "--tools", "", "--no-session-persistence"]
+    try:
+        proc = subprocess.run(cmd, input=_payload(items), capture_output=True, text=True,
+                              timeout=int(cfg.get("timeout", 600)))
+    except subprocess.TimeoutExpired:
+        print("[digest] claude CLI timed out")
         return None
+    try:
+        out = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        print(f"[digest] claude CLI failed (exit {proc.returncode}): "
+              f"{(proc.stderr or proc.stdout)[-500:]}")
+        return None
+    if out.get("is_error") or not isinstance(out.get("structured_output"), dict):
+        print(f"[digest] claude CLI error: {out.get('subtype')} {str(out.get('result'))[:300]}")
+        return None
+    print(f"[digest] via claude CLI; turns={out.get('num_turns')} "
+          f"cost_equiv=${out.get('total_cost_usd', 0):.3f}")
+    return out["structured_output"]
+
+
+def _call_api(items: list[Item], cfg: dict) -> dict | None:
+    """Anthropic API with ANTHROPIC_API_KEY (billed API credits)."""
     import anthropic  # imported lazily so the rest works without the package
 
-    items = items[: int(cfg.get("max_items", 400))]
     client = anthropic.Anthropic()
     try:
         response = client.beta.messages.create(
@@ -144,17 +169,46 @@ def build(items: list[Item], cfg: dict) -> Digest | None:
     except anthropic.APIConnectionError as e:
         print(f"[digest] connection error: {e}")
         return None
-
     if response.stop_reason in ("refusal", "max_tokens"):
         print(f"[digest] unusable response (stop_reason={response.stop_reason})")
         return None
     text = next((b.text for b in response.content if b.type == "text"), "")
     try:
-        digest = parse_digest(json.loads(text), items)
-    except (json.JSONDecodeError, KeyError, TypeError) as e:
+        data = json.loads(text)
+    except json.JSONDecodeError as e:
         print(f"[digest] could not parse response: {e}")
         return None
-    print(f"[digest] {len(digest.releases)} release(s), {len(digest.notable)} notable "
-          f"from {len(items)} item(s); tokens in={response.usage.input_tokens} "
+    print(f"[digest] via API; tokens in={response.usage.input_tokens} "
           f"out={response.usage.output_tokens}")
-    return digest
+    return data
+
+
+def build(items: list[Item], cfg: dict) -> Digest | None:
+    """Return a Korean digest, or None when Claude is unavailable or fails.
+
+    Prefers the subscription (CLAUDE_CODE_OAUTH_TOKEN via the claude CLI), then
+    the API (ANTHROPIC_API_KEY)."""
+    if not cfg.get("enabled", True) or not items:
+        return None
+    items = items[: int(cfg.get("max_items", 400))]
+    callers = []
+    if os.environ.get("CLAUDE_CODE_OAUTH_TOKEN"):
+        callers.append(_call_cli)
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        callers.append(_call_api)
+    if not callers:
+        print("[digest] no CLAUDE_CODE_OAUTH_TOKEN or ANTHROPIC_API_KEY; sending raw list")
+        return None
+    for call in callers:
+        data = call(items, cfg)
+        if data is None:
+            continue
+        try:
+            digest = parse_digest(data, items)
+        except (KeyError, TypeError) as e:
+            print(f"[digest] unexpected digest shape: {e}")
+            continue
+        print(f"[digest] {len(digest.releases)} release(s), {len(digest.notable)} notable "
+              f"from {len(items)} item(s)")
+        return digest
+    return None
