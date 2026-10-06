@@ -344,3 +344,37 @@ def test_digest_telegram_keeps_blocks_whole():
     chunks = report.digest_telegram(d, "t", limit=1000)
     assert len(chunks) > 1 and all(len(c) <= 1000 for c in chunks)
     assert all(c.count("<b>") == c.count("</b>") for c in chunks)
+
+
+def test_decode_body_handles_gzip_with_or_without_header():
+    import gzip
+    import zlib
+    from radar.http import decode_body
+    raw = b"<rss></rss>"
+    assert decode_body(gzip.compress(raw)) == raw            # no header, sniffed
+    assert decode_body(gzip.compress(raw), "gzip") == raw
+    assert decode_body(zlib.compress(raw), "deflate") == raw
+    assert decode_body(raw, "gzip") == raw                    # mislabelled plain body
+
+
+def test_fetch_feed_retries_with_browser_ua_and_fallback_url(monkeypatch):
+    from radar.sources import news as n
+    calls = []
+
+    def fake(url, headers=None, **kw):
+        calls.append((url, headers.get("User-Agent")))
+        if url == "https://a/rss" or headers.get("User-Agent") is None:
+            return b"\x00\x01challenge", {"content-type": "text/html"}
+        return RSS, {"content-type": "application/rss+xml"}
+
+    monkeypatch.setattr(n, "fetch_response", fake)
+    entries = n.fetch_feed(["https://a/rss", "https://b/rss"])
+    assert entries[0].title == "Acme releases Foo-2 model"
+    assert calls == [("https://a/rss", None), ("https://a/rss", n.BROWSER_USER_AGENT),
+                     ("https://b/rss", None), ("https://b/rss", n.BROWSER_USER_AGENT)]
+
+    monkeypatch.setattr(n, "fetch_response",
+                        lambda url, headers=None, **kw: (b"\x1fbad", {"content-type": "text/html"}))
+    with pytest.raises(RuntimeError) as ei:
+        n.fetch_feed(["https://a/rss"])
+    assert "content-type='text/html'" in str(ei.value) and "browser UA" in str(ei.value)

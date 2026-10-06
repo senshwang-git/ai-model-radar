@@ -142,7 +142,11 @@ news:
   feeds:
     # filter: false -> every new item is reported (official model-lab blogs)
     - {name: OpenAI News, url: "https://openai.com/news/rss.xml", filter: true}
-    - {name: Google DeepMind, url: "https://deepmind.google/blog/rss.xml", filter: false}
+    - name: Google DeepMind
+      url: "https://deepmind.google/blog/rss.xml"
+      # Tried in order if the main URL fails or returns a non-feed page.
+      fallback_urls: ["https://blog.google/technology/google-deepmind/rss/"]
+      filter: false
     - {name: Google AI Blog, url: "https://blog.google/technology/ai/rss/", filter: true}
     - {name: Hugging Face Blog, url: "https://huggingface.co/blog/feed.xml", filter: true}
     - {name: NVIDIA Blog, url: "https://blogs.nvidia.com/feed/", filter: true}
