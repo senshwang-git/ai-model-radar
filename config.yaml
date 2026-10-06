@@ -30,12 +30,29 @@ huggingface:
     - HuggingFaceTB
     - stepfun-ai
     - ByteDance-Seed
+    - Aleph-Alpha
+    - ai21labs
+    - black-forest-labs
+    - stabilityai
+    - Lightricks
+    - apple
+    - amazon
+    - Salesforce
+    - inclusionAI
+    - OpenGVLab
+    - rednote-hilab
+    - swiss-ai
+    - skt
+    - K-intelligence
+    - trillionlabs
   per_author_limit: 30
   # Skip derivative repos (quantizations, adapters) by name pattern.
   exclude_patterns:
-    - "(?i)-gguf$"
-    - "(?i)-(awq|gptq|mlx|exl2|onnx)(-|$)"
-    - "(?i)-(int4|int8|4bit|8bit)(-|$)"
+    - "(?i)[-_.]gguf($|[-_.])"
+    - "(?i)[-_.](awq|gptq|mlx|exl2|exl3|onnx|bnb|fp8|fp4|nvfp4|mxfp4|int4|int8|w4a16|w8a8)($|[-_.])"
+    - "(?i)[-_.]?\\d+(\\.\\d+)?bpw"
+    - "(?i)[-_.]\\d+bit($|[-_.])"
+    - "(?i)[-_./](lora|adapter|eagle\\d*|dflash|mtp)($|[-_.])"
   # Also report any model that newly enters the global top-N trending list.
   trending_top_n: 30
 
@@ -74,12 +91,12 @@ papers:
   hf_daily_min_upvotes: 10
   arxiv:
     enabled: true
-    max_results: 50
-    # arXiv API search query. Matches titles announcing new models / tech reports.
+    max_results: 30
+    # arXiv API search query. Only titles that typically announce a model.
     query: >-
-      (cat:cs.CL OR cat:cs.LG OR cat:cs.AI)
-      AND (ti:"technical report" OR ti:"language model" OR ti:"foundation model"
-      OR ti:LLM OR ti:"model family" OR ti:"open-weight")
+      (cat:cs.CL OR cat:cs.LG OR cat:cs.AI OR cat:cs.CV)
+      AND (ti:"technical report" OR ti:"model card" OR ti:"open-weight"
+      OR ti:"open weight" OR ti:"model family")
 
 news:
   enabled: true
@@ -101,7 +118,7 @@ news:
     - open weights
     - 출시
     - 공개
-    - 발표
+
   model_keywords:
     - model
     - LLM
@@ -134,7 +151,6 @@ news:
     - {name: MarkTechPost, url: "https://www.marktechpost.com/feed/", filter: true}
     - {name: TechCrunch AI, url: "https://techcrunch.com/category/artificial-intelligence/feed/", filter: true}
     - {name: The Verge AI, url: "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml", filter: true}
-    - {name: VentureBeat AI, url: "https://venturebeat.com/category/ai/feed/", filter: true}
     - {name: MIT Technology Review AI, url: "https://www.technologyreview.com/topic/artificial-intelligence/feed", filter: true}
     - {name: AI타임스, url: "https://www.aitimes.com/rss/allArticle.xml", filter: true}
 
@@ -145,3 +161,12 @@ notify:
   telegram:
     # Used only when TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID secrets are set.
     enabled: true
+
+# Post-processing with Claude: keep only real model releases (plus notable
+# serving/framework releases) and write a Korean digest. Needs the
+# ANTHROPIC_API_KEY secret; without it the raw filtered list is sent.
+digest:
+  enabled: true
+  model: claude-opus-5-5
+  effort: medium
+  max_items: 400

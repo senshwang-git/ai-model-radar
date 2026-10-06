@@ -14,6 +14,14 @@
 
 GGUF/AWQ/GPTQ 같은 양자화 파생 레포는 기본 제외. 뉴스는 "출시 키워드 + 모델 키워드"가 모두 들어간 기사만 알림 (공식 랩 블로그는 `filter: false`로 전부 알림).
 
+## 한국어 요약 (Claude 후처리)
+
+수집된 항목은 Claude(`claude-opus-5-5`)가 한 번 더 걸러 **실제 신규 모델 출시만** 남기고, 같은 모델에 대한 여러 기사·HF 레포를 하나로 묶어 한국어 요약본을 만듭니다. 서빙 프레임워크 주요 릴리스 등은 "그 밖에 볼 만한 소식"으로 최대 5개까지 붙습니다.
+
+- `ANTHROPIC_API_KEY` Secret이 필요합니다. 없으면 기존처럼 필터링된 원본 목록을 보냅니다.
+- 걸러낸 결과 볼 만한 게 없는 날은 알림을 보내지 않습니다.
+- 설정: `config.yaml`의 `digest:` (모델, effort, 최대 항목 수)
+
 ## 동작 방식
 
 1. 매일 08:47 KST(23:47 UTC)에 `.github/workflows/radar.yml` 실행 (수동 실행 가능)
@@ -32,7 +40,12 @@ GGUF/AWQ/GPTQ 같은 양자화 파생 레포는 기본 제외. 뉴스는 "출시
 |---|---|
 | `TELEGRAM_BOT_TOKEN` | [@BotFather](https://t.me/BotFather)에서 `/newbot`으로 발급 |
 | `TELEGRAM_CHAT_ID` | 봇에게 메시지를 보낸 뒤 `https://api.telegram.org/bot<TOKEN>/getUpdates`의 `chat.id` (채널이면 `@채널명` 또는 `-100…`) |
-| `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY` | 선택. 설정한 프로바이더만 감지 |
+| `ANTHROPIC_API_KEY` | 한국어 요약 후처리 (권장). Anthropic 모델 목록 감지에도 사용 |
+| `OPENAI_API_KEY`, `GEMINI_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY` | 선택. 설정한 프로바이더만 감지 |
+
+### 날짜 지정 다시보기
+
+Actions → Run workflow에서 `lookback_date`(예: `2026-10-05` 또는 `2026-10-01..2026-10-05`)를 넣으면 상태와 무관하게 그 날짜(UTC)에 나온 항목을 요약해 Job Summary에 보여줍니다. `lookback_telegram`을 체크하면 텔레그램으로도 보냅니다.
 
 ### Actions 권한
 

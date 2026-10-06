@@ -3,12 +3,13 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
 
-from . import notify, report
+from . import digest, notify, report
 from .sources import SOURCES
 from .state import State
 
@@ -59,7 +60,7 @@ def main(argv: list[str] | None = None) -> int:
             errors[name] = str(e)
 
     if args.since:
-        return lookback(collected, errors, args.since, args.until or args.since,
+        return lookback(collected, errors, cfg, args.since, args.until or args.since,
                         send_telegram=args.send_telegram)
 
     fresh = state.diff(collected)
@@ -69,19 +70,21 @@ def main(argv: list[str] | None = None) -> int:
     print(f"new: {len(new)} (silently recorded first-seen buckets: {silent})")
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    title = f"🛰️ New AI models & releases — {today} ({len(new)})"
+    out = render(new, errors, cfg, f"🛰️ AI 모델 레이더 — {today}")
 
     if args.dry_run:
-        print("\n" + title + "\n\n" + report.markdown(new, errors))
+        print("\n" + out.title + "\n\n" + out.markdown)
         return 0
 
-    if new and not args.no_notify:
+    if not out.worth_sending:
+        print("[notify] nothing relevant after filtering; no notification sent")
+    elif not args.no_notify:
         ncfg = cfg.get("notify", {})
         attempts, failures = 0, 0
         if ncfg.get("github_issue", {}).get("enabled", True):
             attempts += 1
             try:
-                notify.github_issue(title, report.markdown(new, errors),
+                notify.github_issue(out.title, out.markdown,
                                     ncfg.get("github_issue", {}).get("labels", []))
             except Exception as e:
                 failures += 1
@@ -89,7 +92,7 @@ def main(argv: list[str] | None = None) -> int:
         if ncfg.get("telegram", {}).get("enabled", True):
             attempts += 1
             try:
-                notify.telegram(report.telegram_chunks(new, title))
+                notify.telegram(out.telegram)
             except Exception as e:
                 failures += 1
                 print(f"[notify] telegram failed: {e}")
@@ -104,7 +107,29 @@ def main(argv: list[str] | None = None) -> int:
     return 1 if errors and not collected else 0
 
 
-def lookback(collected, errors: dict, since: str, until: str,
+@dataclass
+class Rendered:
+    title: str
+    markdown: str
+    telegram: list[str]
+    worth_sending: bool
+
+
+def render(items, errors: dict, cfg: dict, title_prefix: str) -> Rendered:
+    """Korean Claude digest when available, otherwise the raw filtered list."""
+    d = digest.build(items, cfg.get("digest") or {})
+    if d is not None:
+        title = f"{title_prefix} · 신규 모델 {len(d.releases)}건"
+        return Rendered(title=title, markdown=report.digest_markdown(d, items, errors),
+                        telegram=report.digest_telegram(d, title),
+                        worth_sending=bool(d.releases or d.notable))
+    title = f"{title_prefix} · 수집 {len(items)}건 (요약 없음)"
+    return Rendered(title=title, markdown=report.markdown(items, errors),
+                    telegram=report.telegram_chunks(items, title),
+                    worth_sending=bool(items))
+
+
+def lookback(collected, errors: dict, cfg: dict, since: str, until: str,
              send_telegram: bool = False) -> int:
     """Report items whose publish date falls in [since, until] (UTC), ignoring state."""
     hits = [it for it in collected if it.published and since <= it.published <= until]
@@ -113,11 +138,11 @@ def lookback(collected, errors: dict, since: str, until: str,
     for it in hits:
         by_src[it.source] = by_src.get(it.source, 0) + 1
     span = since if since == until else f"{since} ~ {until}"
-    title = f"🔎 Lookback {span} (UTC): {len(hits)} item(s)"
+    out = render(hits, errors, cfg, f"🔎 AI 모델 레이더 다시보기 {span} (UTC)")
     summary = ", ".join(f"{k}={v}" for k, v in by_src.items()) or "none"
-    note = (f"_Collected {len(collected)} item(s); {undated} had no publish date and "
-            f"were excluded. Per source: {summary}._\n\n")
-    body = f"# {title}\n\n{note}{report.markdown(hits, errors)}"
+    note = (f"_Collected {len(collected)} item(s); {len(hits)} in range, {undated} had no "
+            f"publish date and were excluded. Per source: {summary}._\n\n")
+    body = f"# {out.title}\n\n{note}{out.markdown}"
     print("\n" + body)
     step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if step_summary:
@@ -125,7 +150,7 @@ def lookback(collected, errors: dict, since: str, until: str,
             f.write(body + "\n")
     if send_telegram:
         try:
-            if not notify.telegram(report.telegram_chunks(hits, title)):
+            if not notify.telegram(out.telegram):
                 return 1
         except Exception as e:
             print(f"[notify] telegram failed: {e}")

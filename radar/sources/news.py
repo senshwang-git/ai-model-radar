@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+import re
+
 from ..feeds import parse
 from ..http import fetch
 from ..models import Item, to_date
 
 
 def _matches(text: str, keywords: list[str]) -> bool:
-    t = text.lower()
-    return any(k.lower() in t for k in keywords)
+    """Case-insensitive match where each keyword must start a word, so that
+    "GPT" does not match "ChatGPT" and "모델" does not match "수치모델"."""
+    return any(re.search(r"(?<![\w])" + re.escape(k), text, re.IGNORECASE)
+               for k in keywords)
 
 
 def is_relevant(title: str, summary: str, cfg: dict) -> bool:

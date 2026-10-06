@@ -2,6 +2,11 @@ import json
 
 import pytest
 
+
+@pytest.fixture(autouse=True)
+def _no_api_key(monkeypatch):
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
 from radar import __main__ as cli
 from radar import feeds, report
 from radar.models import Item
@@ -90,7 +95,7 @@ def test_cli_first_run_is_silent_then_reports(tmp_path, monkeypatch):
     batch[0] = [Item("news", "1", "one", group="Feed"), Item("news", "2", "two", group="Feed")]
     assert cli.main(["--config", str(cfg), "--state", str(state)]) == 0
     assert [k for k, _ in sent] == ["issue", "tg"]
-    assert "(1)" in sent[0][1]
+    assert "수집 1건" in sent[0][1]
     assert json.loads(state.read_text())["seen"]["news"] == ["1", "2"]
 
 
@@ -180,4 +185,83 @@ def test_cli_lookback_send_telegram(tmp_path, monkeypatch):
     argv = ["--config", str(cfg), "--state", str(tmp_path / "s.json"), "--since", "2026-10-05"]
     assert cli.main(argv) == 0 and sent == []
     assert cli.main(argv + ["--send-telegram"]) == 0
-    assert "hit" in sent[0][0] and "Lookback" in sent[0][0]
+    assert "hit" in sent[0][0] and "다시보기" in sent[0][0]
+
+
+def _fake_anthropic(monkeypatch, payload, stop_reason="end_turn"):
+    import sys
+    import types
+
+    calls = []
+
+    class Block:
+        type = "text"
+        text = json.dumps(payload)
+
+    class Resp:
+        content = [Block()]
+        usage = types.SimpleNamespace(input_tokens=10, output_tokens=5)
+
+    Resp.stop_reason = stop_reason
+
+    class Messages:
+        def create(self, **kw):
+            calls.append(kw)
+            return Resp()
+
+    class Client:
+        def __init__(self):
+            self.beta = types.SimpleNamespace(messages=Messages())
+
+    mod = types.SimpleNamespace(Anthropic=Client, APIStatusError=RuntimeError,
+                                APIConnectionError=ConnectionError)
+    monkeypatch.setitem(sys.modules, "anthropic", mod)
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test")
+    return calls
+
+
+def test_digest_build_and_render(monkeypatch):
+    from radar import digest
+    items = [Item("news", "1", "Reflection debuts Beam", url="https://tc/beam", group="TechCrunch AI"),
+             Item("news", "2", "OpenAI adds ads", url="https://v/ads", group="The Verge AI"),
+             Item("github_releases", "vllm@v1", "vllm v1", url="https://gh/v1", group="vllm")]
+    calls = _fake_anthropic(monkeypatch, {
+        "headline": "Reflection AI가 Beam을 공개했습니다.",
+        "releases": [{"name": "Beam", "org": "Reflection AI", "summary_ko": "501B MoE 오픈 웨이트 모델.",
+                      "specs": "501B MoE, 활성 23B", "item_ids": [0, 0, 99]}],
+        "notable": [{"title_ko": "vLLM v1", "summary_ko": "새 릴리스.", "item_ids": [2]}]})
+    d = digest.build(items, {"model": "claude-opus-5-5"})
+    assert calls[0]["model"] == "claude-opus-5-5"
+    assert calls[0]["output_config"]["format"]["type"] == "json_schema"
+    assert [i.key for i in d.releases[0].items] == ["1"]  # deduped, bad id dropped
+    tg = report.digest_telegram(d, "title")
+    assert "Beam · Reflection AI" in tg[0] and "TechCrunch AI" in tg[0] and "ads" not in tg[0]
+    md = report.digest_markdown(d, items, {})
+    assert "신규 모델 (1)" in md and "수집된 전체 항목 (3)" in md
+
+
+def test_digest_falls_back_without_key_or_on_refusal(monkeypatch):
+    from radar import digest
+    items = [Item("news", "1", "x")]
+    assert digest.build(items, {}) is None  # no key (autouse fixture)
+    _fake_anthropic(monkeypatch, {}, stop_reason="refusal")
+    assert digest.build(items, {}) is None
+
+
+def test_cli_skips_notification_when_digest_finds_nothing(tmp_path, monkeypatch):
+    cfg = tmp_path / "c.yaml"
+    cfg.write_text("news:\n  enabled: true\nnotify: {}\n")
+    state = tmp_path / "s.json"
+    state.write_text(json.dumps({"buckets": ["news/F"], "seen": {"news": []}}))
+
+    class FakeNews:
+        @staticmethod
+        def collect(_):
+            return [Item("news", "9", "OpenAI adds ads", group="F")]
+
+    _fake_anthropic(monkeypatch, {"headline": "새 모델 없음", "releases": [], "notable": []})
+    monkeypatch.setattr(cli, "SOURCES", {"news": FakeNews})
+    monkeypatch.setattr(cli.notify, "github_issue", lambda *a: pytest.fail("notified"))
+    monkeypatch.setattr(cli.notify, "telegram", lambda *a: pytest.fail("notified"))
+    assert cli.main(["--config", str(cfg), "--state", str(state)]) == 0
+    assert json.loads(state.read_text())["seen"]["news"] == ["9"]
