@@ -4,35 +4,36 @@ import os
 import urllib.parse
 
 from ..http import get_json
-from ..models import Item
+from ..models import Item, to_date
 
 
-def _openai_compatible(base: str, key: str) -> list[tuple[str, str]]:
+def _openai_compatible(base: str, key: str) -> list[tuple[str, str, str]]:
     data = get_json(base, headers={"Authorization": f"Bearer {key}"})
-    return [(m["id"], "") for m in data.get("data", [])]
+    return [(m["id"], "", to_date(m.get("created"))) for m in data.get("data", [])]
 
 
-def _anthropic(key: str) -> list[tuple[str, str]]:
+def _anthropic(key: str) -> list[tuple[str, str, str]]:
     out, after = [], None
     while True:
         url = "https://api.anthropic.com/v1/models?limit=1000"
         if after:
             url += "&after_id=" + urllib.parse.quote(after)
         data = get_json(url, headers={"x-api-key": key, "anthropic-version": "2023-06-01"})
-        out += [(m["id"], m.get("display_name", "")) for m in data.get("data", [])]
+        out += [(m["id"], m.get("display_name", ""), to_date(m.get("created_at")))
+                for m in data.get("data", [])]
         if not data.get("has_more"):
             return out
         after = data.get("last_id")
 
 
-def _gemini(key: str) -> list[tuple[str, str]]:
+def _gemini(key: str) -> list[tuple[str, str, str]]:
     out, token = [], None
     while True:
         url = "https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000"
         if token:
             url += "&pageToken=" + urllib.parse.quote(token)
         data = get_json(url, headers={"x-goog-api-key": key})
-        out += [(m["name"].removeprefix("models/"), m.get("displayName", ""))
+        out += [(m["name"].removeprefix("models/"), m.get("displayName", ""), "")
                 for m in data.get("models", [])]
         token = data.get("nextPageToken")
         if not token:
@@ -68,7 +69,8 @@ def collect(cfg: dict) -> list[Item]:
         except Exception as e:
             print(f"[providers] {name}: error {e}")
             continue
-        for mid, display in models:
+        for mid, display, created in models:
             items.append(Item(source="providers", key=mid, title=mid, group=name,
-                              url=docs_url, detail=display if display != mid else ""))
+                              url=docs_url, detail=display if display != mid else "",
+                              published=created))
     return items

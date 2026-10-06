@@ -4,7 +4,7 @@ import re
 import urllib.parse
 
 from ..http import get_json
-from ..models import Item
+from ..models import Item, to_date
 
 API = "https://huggingface.co/api/models"
 EXPAND = ["createdAt", "pipeline_tag", "safetensors", "gated", "library_name"]
@@ -41,7 +41,8 @@ def _detail(m: dict) -> str:
 def _item(m: dict, group: str) -> Item:
     mid = m.get("id") or m.get("modelId")
     return Item(source="huggingface", key=mid, title=mid, group=group,
-                url=f"https://huggingface.co/{mid}", detail=_detail(m))
+                url=f"https://huggingface.co/{mid}", detail=_detail(m),
+                published=to_date(m.get("createdAt")))
 
 
 def collect(cfg: dict) -> list[Item]:

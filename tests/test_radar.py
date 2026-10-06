@@ -132,3 +132,34 @@ def test_clean_token():
     assert TOKEN_RE.match(good)
     d = describe_token("x y")
     assert "format_ok=False" in d and "had_whitespace=True" in d
+
+
+def test_to_date_formats():
+    from radar.models import to_date
+    assert to_date("2026-10-05T23:30:00Z") == "2026-10-05"
+    assert to_date("2026-10-06T08:00:00+09:00") == "2026-10-05"  # KST -> UTC
+    assert to_date("Mon, 05 Oct 2026 10:00:00 GMT") == "2026-10-05"
+    assert to_date(1791158400) == "2026-10-05"
+    assert to_date("garbage") == "" and to_date(None) == ""
+
+
+def test_cli_lookback_ignores_state(tmp_path, monkeypatch, capsys):
+    cfg = tmp_path / "c.yaml"
+    cfg.write_text("news:\n  enabled: true\nnotify: {}\n")
+    state = tmp_path / "s.json"
+    state.write_text(json.dumps({"buckets": ["news/F"], "seen": {"news": ["a", "b"]}}))
+
+    class FakeNews:
+        @staticmethod
+        def collect(_):
+            return [Item("news", "a", "yesterday-1", group="F", published="2026-10-05"),
+                    Item("news", "b", "older", group="F", published="2026-10-01"),
+                    Item("news", "c", "undated", group="F")]
+
+    monkeypatch.setattr(cli, "SOURCES", {"news": FakeNews})
+    monkeypatch.setattr(cli.notify, "github_issue", lambda *a: pytest.fail("notified"))
+    before = state.read_text()
+    assert cli.main(["--config", str(cfg), "--state", str(state), "--since", "2026-10-05"]) == 0
+    out = capsys.readouterr().out
+    assert "yesterday-1" in out and "older" not in out and "1 had no publish date" in out
+    assert state.read_text() == before

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..feeds import parse
 from ..http import fetch
-from ..models import Item
+from ..models import Item, to_date
 
 
 def _matches(text: str, keywords: list[str]) -> bool:
@@ -33,5 +33,6 @@ def collect(cfg: dict) -> list[Item]:
             if feed.get("filter", True) and not is_relevant(e.title, e.summary, cfg):
                 continue
             items.append(Item(source="news", key=e.id, title=e.title, url=e.link,
-                              group=name, detail=e.summary[:160]))
+                              group=name, detail=e.summary[:160],
+                              published=to_date(e.published)))
     return items

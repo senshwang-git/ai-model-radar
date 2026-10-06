@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 
 from ..http import get_json
-from ..models import Item
+from ..models import Item, to_date
 
 
 def collect(cfg: dict) -> list[Item]:
@@ -32,5 +32,6 @@ def collect(cfg: dict) -> list[Item]:
             if r.get("prerelease"):
                 detail += " · pre-release"
             items.append(Item(source="github_releases", key=f"{repo}@{tag}", title=title,
-                              url=r.get("html_url", ""), detail=detail, group=repo))
+                              url=r.get("html_url", ""), detail=detail, group=repo,
+                              published=to_date(r.get("published_at"))))
     return items

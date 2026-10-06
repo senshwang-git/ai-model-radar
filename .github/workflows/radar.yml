@@ -10,6 +10,10 @@ on:
         description: "Send notifications (uncheck to only update state)"
         type: boolean
         default: true
+      lookback_date:
+        description: "Lookback (no notify/state): list items published on this UTC date, YYYY-MM-DD or YYYY-MM-DD..YYYY-MM-DD"
+        type: string
+        default: ""
       test_telegram:
         description: "Only send a Telegram test message (no scan)"
         type: boolean
@@ -51,6 +55,9 @@ jobs:
         run: |
           if [ "${{ inputs.test_telegram }}" = "true" ]; then
             python -m radar --test-telegram
+          elif [ -n "${{ inputs.lookback_date }}" ]; then
+            range="${{ inputs.lookback_date }}"
+            python -m radar --since "${range%%..*}" --until "${range##*..}"
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.notify }}" = "false" ]; then
             python -m radar --no-notify
           else
@@ -58,7 +65,7 @@ jobs:
           fi
 
       - name: Commit state
-        if: ${{ inputs.test_telegram != true }}
+        if: ${{ inputs.test_telegram != true && inputs.lookback_date == '' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

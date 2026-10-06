@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 
 from ..feeds import parse
 from ..http import fetch, get_json
-from ..models import Item
+from ..models import Item, to_date
 
 
 def _hf_daily(cfg: dict) -> list[Item]:
@@ -28,7 +28,8 @@ def _hf_daily(cfg: dict) -> list[Item]:
             title = re.sub(r"\s+", " ", paper.get("title") or p.get("title") or pid)
             items.append(Item(source="papers", key=f"arxiv:{pid}", title=title,
                               url=f"https://huggingface.co/papers/{pid}",
-                              detail=f"▲{up}", group="HF Daily Papers"))
+                              detail=f"▲{up}", group="HF Daily Papers",
+                              published=to_date(p.get("publishedAt")) or str(d)))
     return items
 
 
@@ -44,7 +45,7 @@ def _arxiv(cfg: dict) -> list[Item]:
         aid = re.sub(r"v\d+$", "", e.id.rsplit("/abs/", 1)[-1])
         items.append(Item(source="papers", key=f"arxiv:{aid}", title=e.title,
                           url=f"https://arxiv.org/abs/{aid}", detail=e.published[:10],
-                          group="arXiv"))
+                          group="arXiv", published=to_date(e.published)))
     return items
 
 
