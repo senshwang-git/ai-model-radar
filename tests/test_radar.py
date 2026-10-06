@@ -288,12 +288,14 @@ def test_digest_via_cli_subscription(monkeypatch):
     from radar import digest
     payload = {"headline": "h", "releases": [{"name": "Beam", "org": "R", "summary_ko": "s",
                                               "specs": "", "item_ids": [0]}], "notable": []}
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "api-key")
     calls = _fake_cli(monkeypatch, json.dumps({"is_error": False, "num_turns": 2,
                                                "structured_output": payload}))
     d = digest.build([Item("news", "1", "Beam", url="u", group="TC")], {"model": "claude-opus-5-5"})
     cmd, kw = calls[0]
     assert "--json-schema" in cmd and cmd[cmd.index("--tools") + 1] == ""
     assert '"title": "Beam"' in kw["input"]
+    assert "ANTHROPIC_API_KEY" not in kw["env"] and kw["env"]["CLAUDE_CODE_OAUTH_TOKEN"] == "tok"
     assert d.releases[0].title == "Beam · R"
 
 

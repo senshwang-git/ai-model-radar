@@ -128,8 +128,12 @@ def _call_cli(items: list[Item], cfg: dict) -> dict | None:
            "--model", cfg.get("model", "claude-opus-5-5"), "--system-prompt", SYSTEM_PROMPT,
            "--tools", "", "--no-session-persistence"]
     try:
+        # ANTHROPIC_API_KEY outranks the OAuth token in the CLI's credential
+        # order, so drop it here to make the CLI bill the subscription.
+        env = {k: v for k, v in os.environ.items()
+               if k not in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")}
         proc = subprocess.run(cmd, input=_payload(items), capture_output=True, text=True,
-                              timeout=int(cfg.get("timeout", 600)))
+                              timeout=int(cfg.get("timeout", 600)), env=env)
     except subprocess.TimeoutExpired:
         print("[digest] claude CLI timed out")
         return None
