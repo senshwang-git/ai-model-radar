@@ -1,0 +1,147 @@
+# ai-model-radar configuration
+# Each source can be toggled with `enabled`. Sources whose credentials are
+# missing (e.g. provider API keys) are skipped with a warning.
+
+huggingface:
+  enabled: true
+  # New uploads from these orgs/users are reported.
+  authors:
+    - meta-llama
+    - Qwen
+    - deepseek-ai
+    - mistralai
+    - google
+    - microsoft
+    - nvidia
+    - openai
+    - allenai
+    - ibm-granite
+    - CohereLabs
+    - moonshotai
+    - zai-org
+    - MiniMaxAI
+    - tencent
+    - baidu
+    - XiaomiMiMo
+    - LGAI-EXAONE
+    - naver-hyperclovax
+    - upstage
+    - kakaocorp
+    - HuggingFaceTB
+    - stepfun-ai
+    - ByteDance-Seed
+  per_author_limit: 30
+  # Skip derivative repos (quantizations, adapters) by name pattern.
+  exclude_patterns:
+    - "(?i)-gguf$"
+    - "(?i)-(awq|gptq|mlx|exl2|onnx)(-|$)"
+    - "(?i)-(int4|int8|4bit|8bit)(-|$)"
+  # Also report any model that newly enters the global top-N trending list.
+  trending_top_n: 30
+
+providers:
+  enabled: true
+  # Each provider is used only if its API key secret is set.
+  openai: {env: OPENAI_API_KEY}
+  anthropic: {env: ANTHROPIC_API_KEY}
+  gemini: {env: GEMINI_API_KEY}
+  mistral: {env: MISTRAL_API_KEY}
+  xai: {env: XAI_API_KEY}
+  deepseek: {env: DEEPSEEK_API_KEY}
+
+github_releases:
+  enabled: true
+  per_repo_limit: 5
+  include_prereleases: false
+  repos:
+    - vllm-project/vllm
+    - sgl-project/sglang
+    - NVIDIA/TensorRT-LLM
+    - huggingface/transformers
+    - huggingface/text-generation-inference
+    - ggml-org/llama.cpp
+    - ollama/ollama
+    - microsoft/DeepSpeed
+    - pytorch/pytorch
+    - flashinfer-ai/flashinfer
+    - Dao-AILab/flash-attention
+    - LMCache/LMCache
+    - ai-dynamo/dynamo
+
+papers:
+  enabled: true
+  hf_daily_papers: true
+  hf_daily_min_upvotes: 10
+  arxiv:
+    enabled: true
+    max_results: 50
+    # arXiv API search query. Matches titles announcing new models / tech reports.
+    query: >-
+      (cat:cs.CL OR cat:cs.LG OR cat:cs.AI)
+      AND (ti:"technical report" OR ti:"language model" OR ti:"foundation model"
+      OR ti:LLM OR ti:"model family" OR ti:"open-weight")
+
+news:
+  enabled: true
+  per_feed_limit: 30
+  # With filter: true, an item is reported only if its title/summary matches
+  # at least one release keyword AND at least one model keyword
+  # (case-insensitive substring match).
+  release_keywords:
+    - release
+    - launch
+    - unveil
+    - introduc
+    - announc
+    - debut
+    - now available
+    - open-source
+    - open source
+    - open-weight
+    - open weights
+    - 출시
+    - 공개
+    - 발표
+  model_keywords:
+    - model
+    - LLM
+    - GPT
+    - Claude
+    - Gemini
+    - Gemma
+    - Llama
+    - Qwen
+    - DeepSeek
+    - Mistral
+    - Grok
+    - Phi-
+    - Nemotron
+    - Kimi
+    - GLM
+    - MiniMax
+    - EXAONE
+    - HyperCLOVA
+    - 모델
+  feeds:
+    # filter: false -> every new item is reported (official model-lab blogs)
+    - {name: OpenAI News, url: "https://openai.com/news/rss.xml", filter: true}
+    - {name: Google DeepMind, url: "https://deepmind.google/blog/rss.xml", filter: false}
+    - {name: Google AI Blog, url: "https://blog.google/technology/ai/rss/", filter: true}
+    - {name: Hugging Face Blog, url: "https://huggingface.co/blog/feed.xml", filter: true}
+    - {name: NVIDIA Blog, url: "https://blogs.nvidia.com/feed/", filter: true}
+    - {name: Simon Willison, url: "https://simonwillison.net/atom/everything/", filter: true}
+    - {name: The Decoder, url: "https://the-decoder.com/feed/", filter: true}
+    - {name: MarkTechPost, url: "https://www.marktechpost.com/feed/", filter: true}
+    - {name: TechCrunch AI, url: "https://techcrunch.com/category/artificial-intelligence/feed/", filter: true}
+    - {name: The Verge AI, url: "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml", filter: true}
+    - {name: VentureBeat AI, url: "https://venturebeat.com/category/ai/feed/", filter: true}
+    - {name: MIT Technology Review AI, url: "https://www.technologyreview.com/topic/artificial-intelligence/feed", filter: true}
+    - {name: AI타임스, url: "https://www.aitimes.com/rss/allArticle.xml", filter: true}
+
+notify:
+  github_issue:
+    enabled: true
+    labels: [new-models]
+  telegram:
+    # Used only when TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID secrets are set.
+    enabled: true
