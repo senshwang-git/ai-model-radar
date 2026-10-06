@@ -406,7 +406,10 @@ def test_topic_keywords_admit_news_and_papers(monkeypatch):
     monkeypatch.setattr(p.time, "sleep", lambda s: None)
     got = p.collect({"hf_daily_papers": True, "hf_daily_min_upvotes": 10, "topics": [TOPIC]})
     assert sorted({i.key for i in got}) == ["arxiv:1", "arxiv:3"]
-    assert q[0][1] == "arXiv · LLM 서빙" and 'abs:"KV cache"' in q[0][0] and q[0][2] == ["LLM 서빙"]
+    assert q[0][1] == "arXiv · LLM 서빙" and 'all:"KV cache"' in q[0][0] and q[0][2] == ["LLM 서빙"]
+    many = dict(TOPIC, keywords=[f"k{i}" for i in range(9)])
+    qs = p.topic_queries(many)
+    assert len(qs) == 3 and 'all:"k8"' in qs[2] and qs[0].startswith("(cat:cs.CL")
 
 
 def test_digest_topic_news_rendered(monkeypatch):

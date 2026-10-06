@@ -61,11 +61,14 @@ def _arxiv(cfg: dict, query: str | None = None, group: str = "arXiv",
 TOPIC_CATEGORIES = ["cs.CL", "cs.LG", "cs.AI", "cs.DC", "cs.AR", "cs.PF", "cs.OS"]
 
 
-def topic_query(topic: dict) -> str:
-    """arXiv query: any keyword in title or abstract, within CS categories."""
+def topic_queries(topic: dict, chunk: int = 4) -> list[str]:
+    """arXiv queries for a topic: keywords anywhere in the record, within CS
+    categories. Keywords are split into small groups because the arXiv API
+    rejects long boolean queries (HTTP 406)."""
     cats = " OR ".join(f"cat:{c}" for c in topic.get("arxiv_categories", TOPIC_CATEGORIES))
-    terms = " OR ".join(f'ti:"{k}" OR abs:"{k}"' for k in topic.get("keywords", []))
-    return f"({cats}) AND ({terms})"
+    kws = [k.replace('"', "") for k in topic.get("keywords", [])]
+    return [f"({cats}) AND (" + " OR ".join(f'all:"{k}"' for k in kws[i:i + chunk]) + ")"
+            for i in range(0, len(kws), chunk)]
 
 
 def collect(cfg: dict) -> list[Item]:
@@ -80,11 +83,16 @@ def collect(cfg: dict) -> list[Item]:
     for topic in cfg.get("topics", []):
         if not topic.get("arxiv") or not topic.get("keywords"):
             continue
-        time.sleep(3)  # arXiv asks for a few seconds between API calls
-        try:
-            items += _arxiv({"max_results": topic.get("arxiv_max_results", 20)},
-                            query=topic_query(topic), group=f"arXiv · {topic['name']}",
-                            topics=[topic["name"]])
-        except Exception as e:
-            print(f"[papers] arxiv topic {topic['name']}: error {e}")
+        seen: set[str] = set()
+        for query in topic_queries(topic):
+            time.sleep(3)  # arXiv asks for a few seconds between API calls
+            try:
+                found = _arxiv({"max_results": topic.get("arxiv_max_results", 20)},
+                               query=query, group=f"arXiv · {topic['name']}",
+                               topics=[topic["name"]])
+            except Exception as e:
+                print(f"[papers] arxiv topic {topic['name']}: error {e} (query: {query})")
+                continue
+            items += [it for it in found if it.key not in seen]
+            seen.update(it.key for it in found)
     return items
