@@ -163,3 +163,21 @@ def test_cli_lookback_ignores_state(tmp_path, monkeypatch, capsys):
     out = capsys.readouterr().out
     assert "yesterday-1" in out and "older" not in out and "1 had no publish date" in out
     assert state.read_text() == before
+
+
+def test_cli_lookback_send_telegram(tmp_path, monkeypatch):
+    cfg = tmp_path / "c.yaml"
+    cfg.write_text("news:\n  enabled: true\nnotify: {}\n")
+
+    class FakeNews:
+        @staticmethod
+        def collect(_):
+            return [Item("news", "a", "hit", group="F", published="2026-10-05")]
+
+    sent = []
+    monkeypatch.setattr(cli, "SOURCES", {"news": FakeNews})
+    monkeypatch.setattr(cli.notify, "telegram", lambda c: sent.append(c) or True)
+    argv = ["--config", str(cfg), "--state", str(tmp_path / "s.json"), "--since", "2026-10-05"]
+    assert cli.main(argv) == 0 and sent == []
+    assert cli.main(argv + ["--send-telegram"]) == 0
+    assert "hit" in sent[0][0] and "Lookback" in sent[0][0]

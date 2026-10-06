@@ -26,6 +26,8 @@ def main(argv: list[str] | None = None) -> int:
                          "this UTC date (implies --dry-run)")
     ap.add_argument("--until", metavar="YYYY-MM-DD",
                     help="lookback mode upper bound, inclusive (default: --since)")
+    ap.add_argument("--send-telegram", action="store_true",
+                    help="lookback mode: also send the result to Telegram")
     ap.add_argument("--test-telegram", action="store_true",
                     help="send a test message to Telegram and exit")
     args = ap.parse_args(argv)
@@ -57,7 +59,8 @@ def main(argv: list[str] | None = None) -> int:
             errors[name] = str(e)
 
     if args.since:
-        return lookback(collected, errors, args.since, args.until or args.since)
+        return lookback(collected, errors, args.since, args.until or args.since,
+                        send_telegram=args.send_telegram)
 
     fresh = state.diff(collected)
     # Items from orgs/feeds/providers never seen before are recorded silently.
@@ -101,7 +104,8 @@ def main(argv: list[str] | None = None) -> int:
     return 1 if errors and not collected else 0
 
 
-def lookback(collected, errors: dict, since: str, until: str) -> int:
+def lookback(collected, errors: dict, since: str, until: str,
+             send_telegram: bool = False) -> int:
     """Report items whose publish date falls in [since, until] (UTC), ignoring state."""
     hits = [it for it in collected if it.published and since <= it.published <= until]
     undated = sum(1 for it in collected if not it.published)
@@ -119,6 +123,13 @@ def lookback(collected, errors: dict, since: str, until: str) -> int:
     if step_summary:
         with open(step_summary, "a", encoding="utf-8") as f:
             f.write(body + "\n")
+    if send_telegram:
+        try:
+            if not notify.telegram(report.telegram_chunks(hits, title)):
+                return 1
+        except Exception as e:
+            print(f"[notify] telegram failed: {e}")
+            return 1
     return 0
 
 

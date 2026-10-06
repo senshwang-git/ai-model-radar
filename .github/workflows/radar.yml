@@ -14,6 +14,10 @@ on:
         description: "Lookback (no notify/state): list items published on this UTC date, YYYY-MM-DD or YYYY-MM-DD..YYYY-MM-DD"
         type: string
         default: ""
+      lookback_telegram:
+        description: "With lookback_date: also send the result to Telegram"
+        type: boolean
+        default: false
       test_telegram:
         description: "Only send a Telegram test message (no scan)"
         type: boolean
@@ -57,7 +61,9 @@ jobs:
             python -m radar --test-telegram
           elif [ -n "${{ inputs.lookback_date }}" ]; then
             range="${{ inputs.lookback_date }}"
-            python -m radar --since "${range%%..*}" --until "${range##*..}"
+            extra=""
+            [ "${{ inputs.lookback_telegram }}" = "true" ] && extra="--send-telegram"
+            python -m radar --since "${range%%..*}" --until "${range##*..}" $extra
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.notify }}" = "false" ]; then
             python -m radar --no-notify
           else
