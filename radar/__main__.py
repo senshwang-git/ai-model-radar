@@ -48,7 +48,7 @@ def main(argv: list[str] | None = None) -> int:
 
     collected, errors = [], {}
     for name, mod in SOURCES.items():
-        scfg = cfg.get(name) or {}
+        scfg = {**(cfg.get(name) or {}), "topics": cfg.get("topics") or []}
         if not scfg.get("enabled", False) or (args.only and name not in args.only):
             continue
         try:
@@ -117,12 +117,12 @@ class Rendered:
 
 def render(items, errors: dict, cfg: dict, title_prefix: str) -> Rendered:
     """Korean Claude digest when available, otherwise the raw filtered list."""
-    d = digest.build(items, cfg.get("digest") or {})
+    d = digest.build(items, cfg.get("digest") or {}, cfg.get("topics") or [])
     if d is not None:
         title = f"{title_prefix} · 신규 모델 {len(d.releases)}건"
         return Rendered(title=title, markdown=report.digest_markdown(d, items, errors),
                         telegram=report.digest_telegram(d, title),
-                        worth_sending=bool(d.releases or d.notable))
+                        worth_sending=bool(d.releases or d.notable or d.topic_news))
     title = f"{title_prefix} · 수집 {len(items)}건 (요약 없음)"
     return Rendered(title=title, markdown=report.markdown(items, errors),
                     telegram=report.telegram_chunks(items, title),

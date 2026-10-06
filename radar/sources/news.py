@@ -1,19 +1,12 @@
 from __future__ import annotations
 
-import re
-
 import xml.etree.ElementTree as ET
 
 from ..feeds import Entry, parse
 from ..http import BROWSER_USER_AGENT, fetch_response
 from ..models import Item, to_date
-
-
-def _matches(text: str, keywords: list[str]) -> bool:
-    """Case-insensitive match where each keyword must start a word, so that
-    "GPT" does not match "ChatGPT" and "모델" does not match "수치모델"."""
-    return any(re.search(r"(?<![\w])" + re.escape(k), text, re.IGNORECASE)
-               for k in keywords)
+from ..topics import match as match_topics
+from ..topics import matches as _matches
 
 
 def is_relevant(title: str, summary: str, cfg: dict) -> bool:
@@ -68,9 +61,12 @@ def collect(cfg: dict) -> list[Item]:
         for e in entries[:limit]:
             if not e.id or not e.title:
                 continue
-            if feed.get("filter", True) and not is_relevant(e.title, e.summary, cfg):
+            topics = match_topics(f"{e.title} {e.summary}", cfg.get("topics", []))
+            if feed.get("filter", True) and not topics and \
+                    not is_relevant(e.title, e.summary, cfg):
                 continue
             items.append(Item(source="news", key=e.id, title=e.title, url=e.link,
-                              group=name, detail=e.summary[:160],
-                              published=to_date(e.published)))
+                              group=name, detail=e.summary[:300],
+                              published=to_date(e.published),
+                              extra={"topics": topics} if topics else {}))
     return items

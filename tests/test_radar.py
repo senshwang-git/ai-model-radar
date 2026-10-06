@@ -333,8 +333,8 @@ def test_release_notes_cleaned_and_sent_to_digest(monkeypatch):
          "body": body}])
     items = gr.collect({"repos": ["vllm-project/vllm"]})
     payload = json.loads(digest._payload(items))
-    assert "Beam-501B" in payload[0]["release_notes"]
-    assert "release_notes" not in json.loads(digest._payload([Item("news", "1", "x")]))[0]
+    assert "Beam-501B" in payload["items"][0]["release_notes"]
+    assert "release_notes" not in json.loads(digest._payload([Item("news", "1", "x")]))["items"][0]
 
 
 def test_digest_telegram_keeps_blocks_whole():
@@ -378,3 +378,47 @@ def test_fetch_feed_retries_with_browser_ua_and_fallback_url(monkeypatch):
     with pytest.raises(RuntimeError) as ei:
         n.fetch_feed(["https://a/rss"])
     assert "content-type='text/html'" in str(ei.value) and "browser UA" in str(ei.value)
+
+
+TOPIC = {"name": "LLM 서빙", "description": "LLM inference serving",
+         "keywords": ["KV cache", "speculative decoding"], "arxiv": True}
+
+
+def test_topic_keywords_admit_news_and_papers(monkeypatch):
+    from radar.sources import news as n
+    from radar.sources import papers as p
+    feed = (b'<?xml version="1.0"?><rss><channel>'
+            b"<item><title>New KV cache eviction trick halves memory</title><guid>k1</guid></item>"
+            b"<item><title>Company raises funding</title><guid>k2</guid></item>"
+            b"</channel></rss>")
+    monkeypatch.setattr(n, "fetch_response", lambda url, headers=None, **kw: (feed, {}))
+    items = n.collect({"feeds": [{"name": "F", "url": "u"}], "release_keywords": ["launch"],
+                       "model_keywords": ["model"], "topics": [TOPIC]})
+    assert [i.key for i in items] == ["k1"] and items[0].extra["topics"] == ["LLM 서빙"]
+
+    monkeypatch.setattr(p, "get_json", lambda url, **kw: [
+        {"paper": {"id": "1", "title": "Fast speculative decoding", "upvotes": 1}},
+        {"paper": {"id": "2", "title": "Unrelated", "upvotes": 1}},
+        {"paper": {"id": "3", "title": "Popular", "upvotes": 50}}])
+    q = []
+    monkeypatch.setattr(p, "_arxiv", lambda cfg, query=None, group="arXiv", topics=None:
+                        q.append((query, group, topics)) or [])
+    monkeypatch.setattr(p.time, "sleep", lambda s: None)
+    got = p.collect({"hf_daily_papers": True, "hf_daily_min_upvotes": 10, "topics": [TOPIC]})
+    assert sorted({i.key for i in got}) == ["arxiv:1", "arxiv:3"]
+    assert q[0][1] == "arXiv · LLM 서빙" and 'abs:"KV cache"' in q[0][0] and q[0][2] == ["LLM 서빙"]
+
+
+def test_digest_topic_news_rendered(monkeypatch):
+    from radar import digest
+    items = [Item("papers", "arxiv:1", "Fast speculative decoding", url="https://p", group="arXiv",
+                  extra={"topics": ["LLM 서빙"]})]
+    calls = _fake_anthropic(monkeypatch, {
+        "headline": "h", "releases": [], "notable": [],
+        "topic_news": [{"topic": "LLM 서빙", "title": "Fast SD", "points": ["디코딩 2배"],
+                        "item_ids": [0]}]})
+    d = digest.build(items, {}, [TOPIC])
+    sent = json.loads(calls[0]["messages"][0]["content"])
+    assert sent["topics"][0]["name"] == "LLM 서빙" and sent["items"][0]["topics"] == ["LLM 서빙"]
+    tg = report.digest_telegram(d, "t")[0]
+    assert "🔎 <b>LLM 서빙</b>" in tg and "디코딩 2배" in tg and "관심 주제 1" in tg

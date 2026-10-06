@@ -96,6 +96,13 @@ def _links_md(items: list[Item]) -> str:
     return " · ".join(f"[{_label(it)}]({it.url})" for it in items if it.url)
 
 
+def _by_topic(d) -> list[tuple[str, list]]:
+    groups: dict[str, list] = {}
+    for x in getattr(d, "topic_news", None) or []:
+        groups.setdefault(x.topic or "관심 주제", []).append(x)
+    return list(groups.items())
+
+
 def _pack(blocks: list[str], limit: int) -> list[str]:
     """Join blocks into messages under `limit` chars without splitting a block."""
     chunks, cur = [], ""
@@ -116,6 +123,8 @@ def _counts(d) -> str:
         parts.append(f"신규 모델 {len(d.releases)}")
     if d.notable:
         parts.append(f"그 밖에 {len(d.notable)}")
+    if getattr(d, "topic_news", None):
+        parts.append(f"관심 주제 {len(d.topic_news)}")
     return " · ".join(parts) or "새 소식 없음"
 
 
@@ -137,6 +146,13 @@ def digest_telegram(d, title: str, limit: int = 4000) -> list[str]:
             if x.items:
                 lines.append(f"  🔗 {_links_html(x.items)}")
             blocks.append("\n".join(lines))
+    for topic, entries in _by_topic(d):
+        blocks.append(f"━━━━━━━━━━━━\n🔎 <b>{e(topic)}</b>")
+        for x in entries:
+            lines = [f"<b>▪ {e(x.title)}</b>"] + [f"  • {e(p)}" for p in x.points]
+            if x.items:
+                lines.append(f"  🔗 {_links_html(x.items)}")
+            blocks.append("\n".join(lines))
     return _pack(blocks, limit)
 
 
@@ -153,6 +169,14 @@ def digest_markdown(d, raw_items: list[Item], errors: dict[str, str]) -> str:
     if d.notable:
         lines.append("## 📦 그 밖에 볼 만한 소식\n")
         for x in d.notable:
+            lines.append(f"**▪ {x.title}**")
+            lines += [f"- {p}" for p in x.points]
+            if x.items:
+                lines.append(f"- 🔗 {_links_md(x.items)}")
+            lines.append("")
+    for topic, entries in _by_topic(d):
+        lines.append(f"## 🔎 {topic}\n")
+        for x in entries:
             lines.append(f"**▪ {x.title}**")
             lines += [f"- {p}" for p in x.points]
             if x.items:

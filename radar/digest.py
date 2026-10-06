@@ -13,9 +13,9 @@ SYSTEM_PROMPT = """\
 You are the editor of a daily Korean-language briefing on newly released AI models,
 read by an engineer who works on LLM serving systems.
 
-You receive a JSON list of items collected automatically from Hugging Face model
+You receive JSON with `items`, collected automatically from Hugging Face model
 uploads, provider model APIs, GitHub releases of serving frameworks, papers, and AI
-news feeds. Most items are noise. Your job:
+news feeds, and `topics` the reader follows. Most items are noise. Your job:
 
 1. `releases`: genuinely new AI models announced or released in these items (new
    model families, new versions, new open-weight checkpoints, new API models).
@@ -33,7 +33,14 @@ news feeds. Most items are noise. Your job:
    quantization, performance gains (with numbers if given), and breaking changes.
    If the notes are empty or uninformative, say only that a new version shipped;
    do not tell the reader to go check the notes.
-3. Everything else is dropped silently.
+3. `topic_news`: for each followed topic, at most `max_per_topic` items that are
+   genuinely about that topic as its `description` defines it: a new paper,
+   release, product or notable article. Items carry `topics` when a keyword
+   matched, but keywords are only a prefilter: drop matches that are off-topic and
+   include unmatched items that clearly fit. Prefer substance (new technique,
+   result, release) over commentary. Do not repeat an item already used in
+   `releases` or `notable`. Omit topics with nothing worthwhile.
+4. Everything else is dropped silently.
 
 Style: the reader skims this on a phone. Write Korean in 개조식 (outline style):
 every `points` entry is one short phrase, ideally under 40 characters, ending in a
@@ -73,6 +80,24 @@ SCHEMA = {
                 "additionalProperties": False,
             },
         },
+        "topic_news": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "topic": {"type": "string",
+                              "description": "Exactly one of the followed topic names."},
+                    "title": {"type": "string",
+                              "description": "Short title in Korean or the original name."},
+                    "points": {"type": "array", "items": {"type": "string"},
+                               "description": "1-3 short 개조식 Korean phrases: what is "
+                                              "new and why it matters."},
+                    "item_ids": {"type": "array", "items": {"type": "integer"}},
+                },
+                "required": ["topic", "title", "points", "item_ids"],
+                "additionalProperties": False,
+            },
+        },
         "notable": {
             "type": "array",
             "items": {
@@ -90,7 +115,7 @@ SCHEMA = {
             },
         },
     },
-    "required": ["headline", "releases", "notable"],
+    "required": ["headline", "releases", "notable", "topic_news"],
     "additionalProperties": False,
 }
 
@@ -101,6 +126,7 @@ class Entry:
     points: list[str]
     org: str = ""
     items: list[Item] = field(default_factory=list)
+    topic: str = ""
 
 
 @dataclass
@@ -108,17 +134,24 @@ class Digest:
     headline: str
     releases: list[Entry]
     notable: list[Entry]
+    topic_news: list[Entry] = field(default_factory=list)
 
 
-def _payload(items: list[Item]) -> str:
+def _payload(items: list[Item], topics: list[dict] | None = None,
+             max_per_topic: int = 3) -> str:
     rows = []
     for i, it in enumerate(items):
         row = {"id": i, "source": it.source, "where": it.group, "title": it.title,
                "detail": it.detail[:400], "date": it.published, "url": it.url}
         if it.extra.get("notes"):
             row["release_notes"] = it.extra["notes"]
+        if it.extra.get("topics"):
+            row["topics"] = it.extra["topics"]
         rows.append(row)
-    return json.dumps(rows, ensure_ascii=False)
+    followed = [{"name": t["name"], "description": t.get("description", t["name"])}
+                for t in topics or []]
+    return json.dumps({"topics": followed, "max_per_topic": max_per_topic, "items": rows},
+                      ensure_ascii=False)
 
 
 def _resolve(ids: list[int], items: list[Item]) -> list[Item]:
@@ -135,7 +168,11 @@ def parse_digest(data: dict, items: list[Item]) -> Digest:
     notable = [Entry(title=n["title"], points=points(n),
                      items=_resolve(n.get("item_ids", []), items))
                for n in data.get("notable", [])]
-    return Digest(headline=data.get("headline", ""), releases=releases, notable=notable)
+    topic_news = [Entry(title=t["title"], points=points(t), topic=t.get("topic", ""),
+                        items=_resolve(t.get("item_ids", []), items))
+                  for t in data.get("topic_news", [])]
+    return Digest(headline=data.get("headline", ""), releases=releases, notable=notable,
+                  topic_news=topic_news)
 
 
 def _token_kind(tok: str) -> str:
@@ -152,7 +189,7 @@ def _token_kind(tok: str) -> str:
     return f"{kind}, len={len(tok)}"
 
 
-def _call_cli(items: list[Item], cfg: dict) -> dict | None:
+def _call_cli(items: list[Item], cfg: dict, payload: str) -> dict | None:
     """Claude Code CLI with CLAUDE_CODE_OAUTH_TOKEN (Pro/Max subscription)."""
     exe = shutil.which("claude")
     if not exe:
@@ -166,7 +203,7 @@ def _call_cli(items: list[Item], cfg: dict) -> dict | None:
         # order, so drop it here to make the CLI bill the subscription.
         env = {k: v for k, v in os.environ.items()
                if k not in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN")}
-        proc = subprocess.run(cmd, input=_payload(items), capture_output=True, text=True,
+        proc = subprocess.run(cmd, input=payload, capture_output=True, text=True,
                               timeout=int(cfg.get("timeout", 600)), env=env)
     except subprocess.TimeoutExpired:
         print("[digest] claude CLI timed out")
@@ -186,7 +223,7 @@ def _call_cli(items: list[Item], cfg: dict) -> dict | None:
     return out["structured_output"]
 
 
-def _call_api(items: list[Item], cfg: dict) -> dict | None:
+def _call_api(items: list[Item], cfg: dict, payload: str) -> dict | None:
     """Anthropic API with ANTHROPIC_API_KEY (billed API credits)."""
     import anthropic  # imported lazily so the rest works without the package
 
@@ -200,7 +237,7 @@ def _call_api(items: list[Item], cfg: dict) -> dict | None:
             system=SYSTEM_PROMPT,
             output_config={"effort": cfg.get("effort", "medium"),
                            "format": {"type": "json_schema", "schema": SCHEMA}},
-            messages=[{"role": "user", "content": _payload(items)}],
+            messages=[{"role": "user", "content": payload}],
         )
     except anthropic.APIStatusError as e:
         print(f"[digest] API error {e.status_code}: {e.message}")
@@ -222,7 +259,7 @@ def _call_api(items: list[Item], cfg: dict) -> dict | None:
     return data
 
 
-def build(items: list[Item], cfg: dict) -> Digest | None:
+def build(items: list[Item], cfg: dict, topics: list[dict] | None = None) -> Digest | None:
     """Return a Korean digest, or None when Claude is unavailable or fails.
 
     Prefers the subscription (CLAUDE_CODE_OAUTH_TOKEN via the claude CLI), then
@@ -238,8 +275,9 @@ def build(items: list[Item], cfg: dict) -> Digest | None:
     if not callers:
         print("[digest] no CLAUDE_CODE_OAUTH_TOKEN or ANTHROPIC_API_KEY; sending raw list")
         return None
+    payload = _payload(items, topics, int(cfg.get("max_per_topic", 3)))
     for call in callers:
-        data = call(items, cfg)
+        data = call(items, cfg, payload)
         if data is None:
             continue
         try:
@@ -247,7 +285,7 @@ def build(items: list[Item], cfg: dict) -> Digest | None:
         except (KeyError, TypeError) as e:
             print(f"[digest] unexpected digest shape: {e}")
             continue
-        print(f"[digest] {len(digest.releases)} release(s), {len(digest.notable)} notable "
-              f"from {len(items)} item(s)")
+        print(f"[digest] {len(digest.releases)} release(s), {len(digest.notable)} notable, "
+              f"{len(digest.topic_news)} topic item(s) from {len(items)} item(s)")
         return digest
     return None

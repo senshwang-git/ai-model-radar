@@ -22,6 +22,22 @@ GGUF/AWQ/GPTQ 같은 양자화 파생 레포는 기본 제외. 뉴스는 "출시
 - 걸러낸 결과 볼 만한 게 없는 날은 알림을 보내지 않습니다.
 - 설정: `config.yaml`의 `digest:` (모델, effort, 최대 항목 수)
 
+## 관심 주제 따라가기
+
+신규 모델 외에 받아보고 싶은 주제는 `config.yaml`의 `topics:`에 추가합니다. 주제마다 요약에 `🔎 주제 이름` 섹션이 생깁니다(주제당 최대 3건, `digest.max_per_topic`).
+
+```yaml
+topics:
+  - name: 온디바이스 AI
+    description: on-device / edge LLM inference, NPU, mobile deployment
+    keywords: [on-device, edge AI, NPU, mobile LLM, 온디바이스]
+    arxiv: true        # arXiv 신규 논문도 키워드로 검색
+```
+
+- `keywords`는 뉴스 기사와 HF Daily Papers를 넓게 걸러 오는 1차 필터입니다(단어 시작 기준, 대소문자 무시).
+- Claude가 `description`을 기준으로 실제 관련 있는 것만 남기므로 키워드는 넉넉히 넣어도 됩니다.
+- 새 주제를 추가한 첫날은 과거 논문이 쏟아지지 않도록 조용히 기록만 합니다.
+
 ## 동작 방식
 
 1. 매일 08:47 KST(23:47 UTC)에 `.github/workflows/radar.yml` 실행 (수동 실행 가능)
