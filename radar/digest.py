@@ -118,6 +118,20 @@ def parse_digest(data: dict, items: list[Item]) -> Digest:
     return Digest(headline=data.get("headline", ""), releases=releases, notable=notable)
 
 
+def _token_kind(tok: str) -> str:
+    """Non-secret description of a credential's type (never prints the value)."""
+    tok = tok.strip()
+    if tok.startswith("sk-ant-oat"):
+        kind = "subscription OAuth token (sk-ant-oat…)"
+    elif tok.startswith("sk-ant-api"):
+        kind = "API key (sk-ant-api…) — bills API credits, not the subscription"
+    elif tok.startswith("sk-ant-admin"):
+        kind = "Admin API key"
+    else:
+        kind = "unrecognized format"
+    return f"{kind}, len={len(tok)}"
+
+
 def _call_cli(items: list[Item], cfg: dict) -> dict | None:
     """Claude Code CLI with CLAUDE_CODE_OAUTH_TOKEN (Pro/Max subscription)."""
     exe = shutil.which("claude")
@@ -144,7 +158,8 @@ def _call_cli(items: list[Item], cfg: dict) -> dict | None:
               f"{(proc.stderr or proc.stdout)[-500:]}")
         return None
     if out.get("is_error") or not isinstance(out.get("structured_output"), dict):
-        print(f"[digest] claude CLI error: {out.get('subtype')} {str(out.get('result'))[:300]}")
+        print(f"[digest] claude CLI error: {out.get('subtype')} {str(out.get('result'))[:300]} "
+              f"[token: {_token_kind(os.environ.get('CLAUDE_CODE_OAUTH_TOKEN', ''))}]")
         return None
     print(f"[digest] via claude CLI; turns={out.get('num_turns')} "
           f"cost_equiv=${out.get('total_cost_usd', 0):.3f}")

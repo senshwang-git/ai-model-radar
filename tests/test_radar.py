@@ -305,3 +305,10 @@ def test_digest_cli_failure_falls_back_to_api(monkeypatch):
     api_calls = _fake_anthropic(monkeypatch, {"headline": "h", "releases": [], "notable": []})
     d = digest.build([Item("news", "1", "x")], {})
     assert d is not None and len(api_calls) == 1
+
+
+def test_token_kind():
+    from radar.digest import _token_kind
+    assert _token_kind("sk-ant-oat01-abc").startswith("subscription")
+    assert "API key" in _token_kind(" sk-ant-api03-xyz\n")
+    assert "abc" not in _token_kind("sk-ant-oat01-abc")
