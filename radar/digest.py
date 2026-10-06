@@ -28,6 +28,11 @@ news feeds. Most items are noise. Your job:
 2. `notable`: at most 5 other items worth a glance for an LLM-serving engineer,
    e.g. a major release of vLLM / SGLang / TensorRT-LLM / llama.cpp, or a
    significant serving/efficiency paper. Leave empty if nothing qualifies.
+   For a framework release, read its `release_notes` and summarize the 2-4 most
+   important changes for serving: newly supported models, new hardware/kernels or
+   quantization, performance gains (with numbers if given), and breaking changes.
+   If the notes are empty or uninformative, say only that a new version shipped;
+   do not tell the reader to go check the notes.
 3. Everything else is dropped silently.
 
 Write all prose in natural, concise Korean. Keep model, company, and product names in
@@ -68,7 +73,9 @@ SCHEMA = {
                 "type": "object",
                 "properties": {
                     "title_ko": {"type": "string"},
-                    "summary_ko": {"type": "string", "description": "One Korean sentence."},
+                    "summary_ko": {"type": "string",
+                                   "description": "1-3 Korean sentences; for framework "
+                                                  "releases, the key changes."},
                     "item_ids": {"type": "array", "items": {"type": "integer"}},
                 },
                 "required": ["title_ko", "summary_ko", "item_ids"],
@@ -97,9 +104,13 @@ class Digest:
 
 
 def _payload(items: list[Item]) -> str:
-    rows = [{"id": i, "source": it.source, "where": it.group, "title": it.title,
-             "detail": it.detail[:400], "date": it.published, "url": it.url}
-            for i, it in enumerate(items)]
+    rows = []
+    for i, it in enumerate(items):
+        row = {"id": i, "source": it.source, "where": it.group, "title": it.title,
+               "detail": it.detail[:400], "date": it.published, "url": it.url}
+        if it.extra.get("notes"):
+            row["release_notes"] = it.extra["notes"]
+        rows.append(row)
     return json.dumps(rows, ensure_ascii=False)
 
 

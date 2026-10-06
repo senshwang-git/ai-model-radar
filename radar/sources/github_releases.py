@@ -1,9 +1,27 @@
 from __future__ import annotations
 
 import os
+import re
 
 from ..http import get_json
 from ..models import Item, to_date
+
+
+NOTES_LIMIT = 3000
+
+
+def clean_notes(body: str, limit: int = NOTES_LIMIT) -> str:
+    """Compact release-note markdown for the digest prompt: drop images, HTML
+    comments, contributor/changelog link lists and collapse whitespace."""
+    s = re.sub(r"<!--.*?-->", "", body, flags=re.S)
+    s = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", s)                    # images
+    s = re.sub(r"\[([^\]]+)\]\((https?://[^)]+)\)", r"\1", s)        # links -> text
+    s = re.sub(r"https?://github\.com/\S+/pull/(\d+)", r"#\1", s)     # PR urls
+    s = re.sub(r"(?im)^#+\s*(new contributors|full changelog).*", "", s)
+    s = re.sub(r"(?m)^\s*\*\s+@\S+ made their first contribution.*$", "", s)
+    s = re.sub(r"\n{2,}", "\n", s)
+    s = re.sub(r"[ \t]+", " ", s).strip()
+    return s[:limit] + ("…" if len(s) > limit else "")
 
 
 def collect(cfg: dict) -> list[Item]:
@@ -33,5 +51,6 @@ def collect(cfg: dict) -> list[Item]:
                 detail += " · pre-release"
             items.append(Item(source="github_releases", key=f"{repo}@{tag}", title=title,
                               url=r.get("html_url", ""), detail=detail, group=repo,
-                              published=to_date(r.get("published_at"))))
+                              published=to_date(r.get("published_at")),
+                              extra={"notes": clean_notes(r.get("body") or "")}))
     return items

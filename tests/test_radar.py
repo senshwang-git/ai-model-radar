@@ -312,3 +312,24 @@ def test_token_kind():
     assert _token_kind("sk-ant-oat01-abc").startswith("subscription")
     assert "API key" in _token_kind(" sk-ant-api03-xyz\n")
     assert "abc" not in _token_kind("sk-ant-oat01-abc")
+
+
+def test_release_notes_cleaned_and_sent_to_digest(monkeypatch):
+    from radar import digest
+    from radar.sources import github_releases as gr
+    body = ("<!-- hidden -->\n## Highlights\n* Support **Beam-501B** MoE "
+            "([#123](https://github.com/vllm-project/vllm/pull/123))\n"
+            "![img](https://x/y.png)\n\n\n## New Contributors\n"
+            "* @alice made their first contribution in https://github.com/v/v/pull/9\n")
+    notes = gr.clean_notes(body)
+    assert "hidden" not in notes and "img" not in notes and "alice" not in notes
+    assert "Support **Beam-501B** MoE (#123)" in notes
+    assert len(gr.clean_notes("x" * 5000)) == gr.NOTES_LIMIT + 1
+
+    monkeypatch.setattr(gr, "get_json", lambda url, **kw: [
+        {"tag_name": "v1", "name": "v1", "html_url": "u", "published_at": "2026-10-05T01:00:00Z",
+         "body": body}])
+    items = gr.collect({"repos": ["vllm-project/vllm"]})
+    payload = json.loads(digest._payload(items))
+    assert "Beam-501B" in payload[0]["release_notes"]
+    assert "release_notes" not in json.loads(digest._payload([Item("news", "1", "x")]))[0]
