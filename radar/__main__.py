@@ -20,7 +20,19 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--dry-run", action="store_true",
                     help="print the report; do not notify or update state")
     ap.add_argument("--no-notify", action="store_true", help="update state without notifying")
+    ap.add_argument("--test-telegram", action="store_true",
+                    help="send a test message to Telegram and exit")
     args = ap.parse_args(argv)
+
+    if args.test_telegram:
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        try:
+            ok = notify.telegram([f"🛰️ <b>ai-model-radar</b> test message ({now})\n"
+                                  "Telegram notifications are working."])
+        except Exception as e:
+            print(f"[notify] telegram test failed: {e}")
+            ok = False
+        return 0 if ok else 1
 
     cfg = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
     state = State(Path(args.state))

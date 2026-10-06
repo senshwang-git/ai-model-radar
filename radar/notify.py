@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import time
+import urllib.error
 
 from .http import post_json
 
@@ -26,9 +27,14 @@ def telegram(chunks: list[str]) -> bool:
         print("[notify] TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID not set, skipping telegram")
         return False
     for i, text in enumerate(chunks):
-        post_json(f"https://api.telegram.org/bot{token}/sendMessage",
-                  {"chat_id": chat, "text": text, "parse_mode": "HTML",
-                   "disable_web_page_preview": True})
+        try:
+            post_json(f"https://api.telegram.org/bot{token}/sendMessage",
+                      {"chat_id": chat, "text": text, "parse_mode": "HTML",
+                       "disable_web_page_preview": True})
+        except urllib.error.HTTPError as e:
+            # Surface Telegram's reason, e.g. "Bad Request: chat not found".
+            raise RuntimeError(f"telegram HTTP {e.code}: "
+                               f"{e.read().decode(errors='replace')}") from None
         if i + 1 < len(chunks):
             time.sleep(1.1)  # stay under Telegram's per-chat rate limit
     print(f"[notify] telegram: sent {len(chunks)} message(s)")

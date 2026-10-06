@@ -10,6 +10,10 @@ on:
         description: "Send notifications (uncheck to only update state)"
         type: boolean
         default: true
+      test_telegram:
+        description: "Only send a Telegram test message (no scan)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -45,13 +49,16 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.notify }}" = "false" ]; then
+          if [ "${{ inputs.test_telegram }}" = "true" ]; then
+            python -m radar --test-telegram
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.notify }}" = "false" ]; then
             python -m radar --no-notify
           else
             python -m radar
           fi
 
       - name: Commit state
+        if: ${{ inputs.test_telegram != true }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

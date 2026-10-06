@@ -113,3 +113,12 @@ def test_cli_keeps_state_when_all_notifiers_fail(tmp_path, monkeypatch):
     monkeypatch.setattr(cli.notify, "telegram", boom)
     assert cli.main(["--config", str(cfg), "--state", str(state)]) == 1
     assert json.loads(state.read_text())["seen"]["news"] == []
+
+
+def test_cli_test_telegram(monkeypatch):
+    sent = []
+    monkeypatch.setattr(cli.notify, "telegram", lambda c: sent.append(c) or True)
+    assert cli.main(["--test-telegram"]) == 0
+    assert "test message" in sent[0][0]
+    monkeypatch.setattr(cli.notify, "telegram", lambda c: False)
+    assert cli.main(["--test-telegram"]) == 1
