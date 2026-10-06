@@ -35,11 +35,16 @@ news feeds. Most items are noise. Your job:
    do not tell the reader to go check the notes.
 3. Everything else is dropped silently.
 
-Write all prose in natural, concise Korean. Keep model, company, and product names in
-their original form. Put concrete facts in `specs` (parameter count, active
-parameters, architecture such as MoE, context length, modality, license,
-open-weight vs API-only) only when the items state them; never invent numbers.
-`item_ids` must reference the input ids that support each entry.
+Style: the reader skims this on a phone. Write Korean in 개조식 (outline style):
+every `points` entry is one short phrase, ideally under 40 characters, ending in a
+noun or noun-like form (e.g. "501B MoE, 활성 23B", "오픈 웨이트 공개",
+"코딩·에이전트 작업 특화", "DeepSeek-V4.1-Flash 성능 개선"). No full sentences, no
+"~습니다", no filler. Put the most important fact first. Keep model, company, and
+product names in their original form. For models, the first point should carry the
+concrete specs (parameter count, active parameters, architecture such as MoE,
+context length, modality, license, open-weight vs API-only) when the items state
+them; never invent numbers. `item_ids` must reference the input ids that support
+each entry.
 """
 
 SCHEMA = {
@@ -47,8 +52,9 @@ SCHEMA = {
     "properties": {
         "headline": {
             "type": "string",
-            "description": "One Korean sentence summarizing the day. If there are no "
-                           "releases, say so plainly.",
+            "description": "One short Korean line (under 50 characters) giving the "
+                           "gist of the day, e.g. '오픈 웨이트 MoE 3종 공개, vLLM 0.31 출시'. "
+                           "If nothing was released, say so plainly.",
         },
         "releases": {
             "type": "array",
@@ -57,13 +63,13 @@ SCHEMA = {
                 "properties": {
                     "name": {"type": "string"},
                     "org": {"type": "string"},
-                    "summary_ko": {"type": "string",
-                                   "description": "1-2 Korean sentences."},
-                    "specs": {"type": "string",
-                              "description": "Short Korean/English spec line, or ''."},
+                    "points": {"type": "array", "items": {"type": "string"},
+                               "description": "2-3 short 개조식 Korean phrases; specs "
+                                              "first, then what it is for / why it "
+                                              "matters."},
                     "item_ids": {"type": "array", "items": {"type": "integer"}},
                 },
-                "required": ["name", "org", "summary_ko", "specs", "item_ids"],
+                "required": ["name", "org", "points", "item_ids"],
                 "additionalProperties": False,
             },
         },
@@ -72,13 +78,14 @@ SCHEMA = {
             "items": {
                 "type": "object",
                 "properties": {
-                    "title_ko": {"type": "string"},
-                    "summary_ko": {"type": "string",
-                                   "description": "1-3 Korean sentences; for framework "
-                                                  "releases, the key changes."},
+                    "title": {"type": "string",
+                              "description": "Short title, e.g. 'vLLM v0.31.0'."},
+                    "points": {"type": "array", "items": {"type": "string"},
+                               "description": "1-4 short 개조식 Korean phrases; for "
+                                              "framework releases, the key changes."},
                     "item_ids": {"type": "array", "items": {"type": "integer"}},
                 },
-                "required": ["title_ko", "summary_ko", "item_ids"],
+                "required": ["title", "points", "item_ids"],
                 "additionalProperties": False,
             },
         },
@@ -91,8 +98,8 @@ SCHEMA = {
 @dataclass
 class Entry:
     title: str
-    summary: str
-    specs: str = ""
+    points: list[str]
+    org: str = ""
     items: list[Item] = field(default_factory=list)
 
 
@@ -119,11 +126,13 @@ def _resolve(ids: list[int], items: list[Item]) -> list[Item]:
 
 
 def parse_digest(data: dict, items: list[Item]) -> Digest:
-    releases = [Entry(title=f"{r['name']} · {r['org']}" if r.get("org") else r["name"],
-                      summary=r["summary_ko"], specs=r.get("specs", ""),
+    def points(x: dict) -> list[str]:
+        return [p.strip() for p in x.get("points", []) if p and p.strip()]
+
+    releases = [Entry(title=r["name"], org=r.get("org", ""), points=points(r),
                       items=_resolve(r.get("item_ids", []), items))
                 for r in data.get("releases", [])]
-    notable = [Entry(title=n["title_ko"], summary=n["summary_ko"],
+    notable = [Entry(title=n["title"], points=points(n),
                      items=_resolve(n.get("item_ids", []), items))
                for n in data.get("notable", [])]
     return Digest(headline=data.get("headline", ""), releases=releases, notable=notable)

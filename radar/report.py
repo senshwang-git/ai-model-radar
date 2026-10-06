@@ -96,52 +96,68 @@ def _links_md(items: list[Item]) -> str:
     return " · ".join(f"[{_label(it)}]({it.url})" for it in items if it.url)
 
 
-def digest_telegram(d, title: str, limit: int = 4000) -> list[str]:
-    e = html.escape
-    lines = [f"<b>{e(title)}</b>", e(d.headline)]
-    if d.releases:
-        lines += ["", f"🚀 <b>신규 모델 ({len(d.releases)})</b>"]
-        for n, r in enumerate(d.releases, 1):
-            lines.append(f"\n<b>{n}. {e(r.title)}</b>")
-            lines.append(e(r.summary))
-            if r.specs:
-                lines.append(f"📐 {e(r.specs)}")
-            if r.items:
-                lines.append(f"🔗 {_links_html(r.items)}")
-    if d.notable:
-        lines += ["", "📌 <b>그 밖에 볼 만한 소식</b>"]
-        for x in d.notable:
-            links = _links_html(x.items)
-            lines.append(f"• <b>{e(x.title)}</b> — {e(x.summary)}" + (f" ({links})" if links else ""))
+def _pack(blocks: list[str], limit: int) -> list[str]:
+    """Join blocks into messages under `limit` chars without splitting a block."""
     chunks, cur = [], ""
-    for line in lines:
-        if cur and len(cur) + len(line) + 1 > limit:
+    for b in blocks:
+        b = b[:limit]
+        if cur and len(cur) + len(b) + 2 > limit:
             chunks.append(cur)
             cur = ""
-        cur = f"{cur}\n{line}" if cur else line[:limit]
+        cur = f"{cur}\n\n{b}" if cur else b
     if cur:
         chunks.append(cur)
     return chunks
 
 
-def digest_markdown(d, raw_items: list[Item], errors: dict[str, str]) -> str:
-    lines = [f"> {d.headline}", ""]
+def _counts(d) -> str:
+    parts = []
     if d.releases:
-        lines.append(f"## 🚀 신규 모델 ({len(d.releases)})\n")
+        parts.append(f"신규 모델 {len(d.releases)}")
+    if d.notable:
+        parts.append(f"그 밖에 {len(d.notable)}")
+    return " · ".join(parts) or "새 소식 없음"
+
+
+def digest_telegram(d, title: str, limit: int = 4000) -> list[str]:
+    e = html.escape
+    blocks = [f"<b>{e(title)}</b>\n{e(_counts(d))}\n\n💡 {e(d.headline)}"]
+    if d.releases:
+        blocks.append("━━━━━━━━━━━━\n🚀 <b>신규 모델</b>")
         for n, r in enumerate(d.releases, 1):
-            lines.append(f"### {n}. {r.title}\n")
-            lines.append(r.summary + "\n")
-            if r.specs:
-                lines.append(f"- 📐 {r.specs}")
+            head = f"<b>{n}. {e(r.title)}</b>" + (f" · {e(r.org)}" if r.org else "")
+            lines = [head] + [f"  • {e(p)}" for p in r.points]
+            if r.items:
+                lines.append(f"  🔗 {_links_html(r.items)}")
+            blocks.append("\n".join(lines))
+    if d.notable:
+        blocks.append("━━━━━━━━━━━━\n📦 <b>그 밖에 볼 만한 소식</b>")
+        for x in d.notable:
+            lines = [f"<b>▪ {e(x.title)}</b>"] + [f"  • {e(p)}" for p in x.points]
+            if x.items:
+                lines.append(f"  🔗 {_links_html(x.items)}")
+            blocks.append("\n".join(lines))
+    return _pack(blocks, limit)
+
+
+def digest_markdown(d, raw_items: list[Item], errors: dict[str, str]) -> str:
+    lines = [f"**{_counts(d)}** — {d.headline}", ""]
+    if d.releases:
+        lines.append("## 🚀 신규 모델\n")
+        for n, r in enumerate(d.releases, 1):
+            lines.append(f"**{n}. {r.title}**" + (f" · {r.org}" if r.org else ""))
+            lines += [f"- {p}" for p in r.points]
             if r.items:
                 lines.append(f"- 🔗 {_links_md(r.items)}")
             lines.append("")
     if d.notable:
-        lines.append("## 📌 그 밖에 볼 만한 소식\n")
+        lines.append("## 📦 그 밖에 볼 만한 소식\n")
         for x in d.notable:
-            links = _links_md(x.items)
-            lines.append(f"- **{x.title}** — {x.summary}" + (f" ({links})" if links else ""))
-        lines.append("")
+            lines.append(f"**▪ {x.title}**")
+            lines += [f"- {p}" for p in x.points]
+            if x.items:
+                lines.append(f"- 🔗 {_links_md(x.items)}")
+            lines.append("")
     lines.append(f"<details><summary>수집된 전체 항목 ({len(raw_items)})</summary>\n")
     lines.append(markdown(raw_items, errors, max_len=50000))
     lines.append("\n</details>")

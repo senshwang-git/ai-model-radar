@@ -228,17 +228,19 @@ def test_digest_build_and_render(monkeypatch):
              Item("github_releases", "vllm@v1", "vllm v1", url="https://gh/v1", group="vllm")]
     calls = _fake_anthropic(monkeypatch, {
         "headline": "Reflection AI가 Beam을 공개했습니다.",
-        "releases": [{"name": "Beam", "org": "Reflection AI", "summary_ko": "501B MoE 오픈 웨이트 모델.",
-                      "specs": "501B MoE, 활성 23B", "item_ids": [0, 0, 99]}],
-        "notable": [{"title_ko": "vLLM v1", "summary_ko": "새 릴리스.", "item_ids": [2]}]})
+        "releases": [{"name": "Beam", "org": "Reflection AI",
+                      "points": ["501B MoE, 활성 23B", " ", "코딩 특화"], "item_ids": [0, 0, 99]}],
+        "notable": [{"title": "vLLM v1", "points": ["새 커널"], "item_ids": [2]}]})
     d = digest.build(items, {"model": "claude-opus-5-5"})
     assert calls[0]["model"] == "claude-opus-5-5"
     assert calls[0]["output_config"]["format"]["type"] == "json_schema"
     assert [i.key for i in d.releases[0].items] == ["1"]  # deduped, bad id dropped
     tg = report.digest_telegram(d, "title")
-    assert "Beam · Reflection AI" in tg[0] and "TechCrunch AI" in tg[0] and "ads" not in tg[0]
+    assert "<b>1. Beam</b> · Reflection AI" in tg[0] and "TechCrunch AI" in tg[0]
+    assert "  • 501B MoE, 활성 23B\n  • 코딩 특화\n" in tg[0] and "ads" not in tg[0]
+    assert "신규 모델 1 · 그 밖에 1" in tg[0]
     md = report.digest_markdown(d, items, {})
-    assert "신규 모델 (1)" in md and "수집된 전체 항목 (3)" in md
+    assert "- 501B MoE, 활성 23B" in md and "수집된 전체 항목 (3)" in md
 
 
 def test_digest_falls_back_without_key_or_on_refusal(monkeypatch):
@@ -286,8 +288,8 @@ def _fake_cli(monkeypatch, stdout, returncode=0):
 
 def test_digest_via_cli_subscription(monkeypatch):
     from radar import digest
-    payload = {"headline": "h", "releases": [{"name": "Beam", "org": "R", "summary_ko": "s",
-                                              "specs": "", "item_ids": [0]}], "notable": []}
+    payload = {"headline": "h", "releases": [{"name": "Beam", "org": "R", "points": ["s"],
+                                              "item_ids": [0]}], "notable": []}
     monkeypatch.setenv("ANTHROPIC_API_KEY", "api-key")
     calls = _fake_cli(monkeypatch, json.dumps({"is_error": False, "num_turns": 2,
                                                "structured_output": payload}))
@@ -296,7 +298,7 @@ def test_digest_via_cli_subscription(monkeypatch):
     assert "--json-schema" in cmd and cmd[cmd.index("--tools") + 1] == ""
     assert '"title": "Beam"' in kw["input"]
     assert "ANTHROPIC_API_KEY" not in kw["env"] and kw["env"]["CLAUDE_CODE_OAUTH_TOKEN"] == "tok"
-    assert d.releases[0].title == "Beam · R"
+    assert d.releases[0].title == "Beam" and d.releases[0].org == "R"
 
 
 def test_digest_cli_failure_falls_back_to_api(monkeypatch):
@@ -333,3 +335,12 @@ def test_release_notes_cleaned_and_sent_to_digest(monkeypatch):
     payload = json.loads(digest._payload(items))
     assert "Beam-501B" in payload[0]["release_notes"]
     assert "release_notes" not in json.loads(digest._payload([Item("news", "1", "x")]))[0]
+
+
+def test_digest_telegram_keeps_blocks_whole():
+    from radar.digest import Digest, Entry
+    d = Digest(headline="h", notable=[],
+               releases=[Entry(title=f"M{i}", points=["x" * 80] * 3) for i in range(40)])
+    chunks = report.digest_telegram(d, "t", limit=1000)
+    assert len(chunks) > 1 and all(len(c) <= 1000 for c in chunks)
+    assert all(c.count("<b>") == c.count("</b>") for c in chunks)
