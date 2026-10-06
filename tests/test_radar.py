@@ -122,3 +122,13 @@ def test_cli_test_telegram(monkeypatch):
     assert "test message" in sent[0][0]
     monkeypatch.setattr(cli.notify, "telegram", lambda c: False)
     assert cli.main(["--test-telegram"]) == 1
+
+
+def test_clean_token():
+    from radar.notify import TOKEN_RE, clean_token, describe_token
+    good = "123456789:AAHabcdefghijklmnopqrstuvwxyz012345"
+    for raw in (good, f" {good}\n", f"bot{good}", f'"{good}"'):
+        assert clean_token(raw) == good
+    assert TOKEN_RE.match(good)
+    d = describe_token("x y")
+    assert "format_ok=False" in d and "had_whitespace=True" in d
