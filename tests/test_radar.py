@@ -425,3 +425,29 @@ def test_digest_topic_news_rendered(monkeypatch):
     assert sent["topics"][0]["name"] == "LLM 서빙" and sent["items"][0]["topics"] == ["LLM 서빙"]
     tg = report.digest_telegram(d, "t")[0]
     assert "🔎 <b>LLM 서빙</b>" in tg and "디코딩 2배" in tg and "관심 주제 1" in tg
+
+
+def test_once_per_day_skips_second_run(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+    cfg = tmp_path / "c.yaml"
+    cfg.write_text("news:\n  enabled: true\nnotify: {}\n")
+    state = tmp_path / "s.json"
+    state.write_text(json.dumps({"updated_at": datetime.now(timezone.utc).isoformat(),
+                                 "buckets": [], "seen": {}}))
+    monkeypatch.setattr(cli, "SOURCES", {"news": type("N", (), {"collect": staticmethod(
+        lambda _: pytest.fail("should have skipped"))})})
+    assert cli.main(["--config", str(cfg), "--state", str(state), "--once-per-day"]) == 0
+
+
+def test_wait_until_sleeps_only_for_near_future(monkeypatch):
+    from datetime import datetime, timedelta
+    slept = []
+    monkeypatch.setattr(cli.time, "sleep", lambda s: slept.append(s))
+    now = datetime.now(cli.KST)
+    soon = (now + timedelta(minutes=30)).strftime("%H:%M")
+    cli.wait_until(soon)
+    assert slept and 25 * 60 < slept[0] <= 30 * 60
+    slept.clear()
+    cli.wait_until((now - timedelta(minutes=5)).strftime("%H:%M"))   # already past
+    cli.wait_until((now + timedelta(hours=5)).strftime("%H:%M"))     # too far ahead
+    assert slept == []

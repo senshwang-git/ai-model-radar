@@ -27,6 +27,9 @@ class State:
         raw = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
         self.seen: dict[str, list[str]] = raw.get("seen", {})
         self.buckets: set[str] = set(raw.get("buckets", []))
+        # UTC time of the last completed (state-saving) run.
+        self.last_run: datetime | None = (
+            datetime.fromisoformat(raw["updated_at"]) if raw.get("updated_at") else None)
 
     def is_new_bucket(self, it: Item) -> bool:
         return bucket(it) not in self.buckets
@@ -56,8 +59,9 @@ class State:
 
     def save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.last_run = datetime.now(timezone.utc)
         payload = {
-            "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "updated_at": self.last_run.isoformat(timespec="seconds"),
             "buckets": sorted(self.buckets),
             "seen": self.seen,
         }

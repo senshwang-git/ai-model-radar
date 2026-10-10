@@ -3,8 +3,9 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import yaml
@@ -29,6 +30,12 @@ def main(argv: list[str] | None = None) -> int:
                     help="lookback mode upper bound, inclusive (default: --since)")
     ap.add_argument("--send-telegram", action="store_true",
                     help="lookback mode: also send the result to Telegram")
+    ap.add_argument("--deliver-at", metavar="HH:MM",
+                    help="hold notifications until this KST time if the run starts "
+                         "up to 2 hours early (scheduled runs)")
+    ap.add_argument("--once-per-day", action="store_true",
+                    help="skip if a run already completed today (KST); lets backup "
+                         "cron entries act only when the first one did not run")
     ap.add_argument("--test-telegram", action="store_true",
                     help="send a test message to Telegram and exit")
     args = ap.parse_args(argv)
@@ -45,6 +52,10 @@ def main(argv: list[str] | None = None) -> int:
 
     cfg = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
     state = State(Path(args.state))
+    if args.once_per_day and state.last_run and \
+            state.last_run.astimezone(KST).date() == datetime.now(KST).date():
+        print(f"[schedule] already ran today at {state.last_run.astimezone(KST):%H:%M} KST; skipping")
+        return 0
 
     collected, errors = [], {}
     for name, mod in SOURCES.items():
@@ -76,6 +87,9 @@ def main(argv: list[str] | None = None) -> int:
         print("\n" + out.title + "\n\n" + out.markdown)
         return 0
 
+    if args.deliver_at and out.worth_sending and not args.no_notify:
+        wait_until(args.deliver_at)
+
     if not out.worth_sending:
         print("[notify] nothing relevant after filtering; no notification sent")
     elif not args.no_notify:
@@ -105,6 +119,22 @@ def main(argv: list[str] | None = None) -> int:
     state.save()
     # Fail the run only if every enabled source failed.
     return 1 if errors and not collected else 0
+
+
+KST = timezone(timedelta(hours=9))
+
+
+def wait_until(hhmm: str, max_wait: timedelta = timedelta(hours=2)) -> None:
+    """Sleep until today's HH:MM KST if that is in the near future."""
+    h, m = (int(x) for x in hhmm.split(":"))
+    now = datetime.now(KST)
+    target = now.replace(hour=h, minute=m, second=0, microsecond=0)
+    if target - now < -timedelta(hours=12):  # e.g. 23:50 now, 00:10 target
+        target += timedelta(days=1)
+    delay = target - now
+    if timedelta(0) < delay <= max_wait:
+        print(f"[schedule] holding notifications until {hhmm} KST ({delay.seconds // 60} min)")
+        time.sleep(delay.total_seconds())
 
 
 @dataclass

@@ -40,7 +40,7 @@ topics:
 
 ## 동작 방식
 
-1. 매일 08:47 KST(23:47 UTC)에 `.github/workflows/radar.yml` 실행 (수동 실행 가능)
+1. 매일 05:17 KST에 `.github/workflows/radar.yml`이 시작해 수집·요약을 마치고, **06:00 KST에 알림 발송** (GitHub 예약 실행 지연 대비. 06:41 KST 백업 실행은 첫 실행이 없었을 때만 동작)
 2. 각 소스에서 항목 수집 → `state/seen.json`과 비교해 새 항목만 추림
 3. 새 항목을 하나의 Issue(라벨 `new-models`)로 생성하고 Telegram으로 전송
 4. `state/seen.json` 갱신 후 커밋
