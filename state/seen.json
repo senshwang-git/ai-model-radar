@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-10T02:48:49+00:00",
+ "updated_at": "2026-10-10T23:32:52+00:00",
  "buckets": [
   "github_releases/LMCache/LMCache",
   "github_releases/ai-dynamo/dynamo",
@@ -1088,7 +1088,11 @@
    "ollama/ollama@v0.40.1",
    "ollama/ollama@v0.40.2",
    "flashinfer-ai/flashinfer@v0.7.1",
-   "ai-dynamo/dynamo@v1.6.0-minimax-m3-dev.1"
+   "ai-dynamo/dynamo@v1.6.0-minimax-m3-dev.1",
+   "LMCache/LMCache@0.5.6rc4-rocm-torch210",
+   "LMCache/LMCache@0.5.6rc4-rocm",
+   "LMCache/LMCache@0.5.6rc4-musa",
+   "LMCache/LMCache@0.5.6rc4-cu129"
   ],
   "papers": [
    "arxiv:2610.04198",
@@ -1441,7 +1445,11 @@
    "arxiv:2610.04875",
    "arxiv:2610.07862",
    "arxiv:2610.02396",
-   "arxiv:2609.33659"
+   "arxiv:2609.33659",
+   "arxiv:2610.12423",
+   "arxiv:2610.04977",
+   "arxiv:2609.33987",
+   "arxiv:2610.09450"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -1567,7 +1575,15 @@
    "https://www.aitimes.com/news/articleView.html?idxno=216099",
    "https://www.aitimes.com/news/articleView.html?idxno=216101",
    "https://www.aitimes.com/news/articleView.html?idxno=216100",
-   "https://www.aitimes.com/news/articleView.html?idxno=216093"
+   "https://www.aitimes.com/news/articleView.html?idxno=216093",
+   "https://the-decoder.com/?p=41328",
+   "https://www.marktechpost.com/?p=82834",
+   "https://www.marktechpost.com/?p=82831",
+   "https://www.aitimes.com/news/articleView.html?idxno=216107",
+   "https://www.aitimes.com/news/articleView.html?idxno=216108",
+   "https://www.aitimes.com/news/articleView.html?idxno=216110",
+   "https://www.aitimes.com/news/articleView.html?idxno=216117",
+   "https://www.aitimes.com/news/articleView.html?idxno=216111"
   ],
   "providers": [
    "claude-sonnet-5-5",
