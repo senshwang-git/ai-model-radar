@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-10T23:32:52+00:00",
+ "updated_at": "2026-10-11T23:39:15+00:00",
  "buckets": [
   "github_releases/LMCache/LMCache",
   "github_releases/ai-dynamo/dynamo",
@@ -1036,7 +1036,11 @@
    "amazon/strands-decider-E4B-gemma4-v1-2610",
    "amazon/strands-decider-E2B-gemma4-v1-2610",
    "ConwayResearch/Underdog-Saluki-27B-1.0",
-   "FrancisRing/Prism"
+   "FrancisRing/Prism",
+   "microsoft/AesCode-32B",
+   "microsoft/AesCode-8B",
+   "speridlabs/iris-3b",
+   "facebook/sam3"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -1092,7 +1096,8 @@
    "LMCache/LMCache@0.5.6rc4-rocm-torch210",
    "LMCache/LMCache@0.5.6rc4-rocm",
    "LMCache/LMCache@0.5.6rc4-musa",
-   "LMCache/LMCache@0.5.6rc4-cu129"
+   "LMCache/LMCache@0.5.6rc4-cu129",
+   "ollama/ollama@v0.40.3"
   ],
   "papers": [
    "arxiv:2610.04198",
@@ -1449,7 +1454,14 @@
    "arxiv:2610.12423",
    "arxiv:2610.04977",
    "arxiv:2609.33987",
-   "arxiv:2610.09450"
+   "arxiv:2610.09450",
+   "arxiv:2610.11287",
+   "arxiv:2609.35433",
+   "arxiv:2610.11366",
+   "arxiv:2610.03858",
+   "arxiv:2606.03335",
+   "arxiv:2610.12402",
+   "arxiv:2610.12230"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -1583,7 +1595,12 @@
    "https://www.aitimes.com/news/articleView.html?idxno=216108",
    "https://www.aitimes.com/news/articleView.html?idxno=216110",
    "https://www.aitimes.com/news/articleView.html?idxno=216117",
-   "https://www.aitimes.com/news/articleView.html?idxno=216111"
+   "https://www.aitimes.com/news/articleView.html?idxno=216111",
+   "https://www.marktechpost.com/?p=82852",
+   "https://www.marktechpost.com/?p=82849",
+   "https://www.marktechpost.com/?p=82846",
+   "https://www.aitimes.com/news/articleView.html?idxno=216127",
+   "https://www.aitimes.com/news/articleView.html?idxno=216124"
   ],
   "providers": [
    "claude-sonnet-5-5",
