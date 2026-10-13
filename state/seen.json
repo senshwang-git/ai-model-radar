@@ -1,6 +1,7 @@
 {
- "updated_at": "2026-10-13T02:05:34+00:00",
+ "updated_at": "2026-10-13T23:44:21+00:00",
  "buckets": [
+  "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
   "github_releases/ai-dynamo/dynamo",
   "github_releases/flashinfer-ai/flashinfer",
@@ -1042,7 +1043,11 @@
    "speridlabs/iris-3b",
    "facebook/sam3",
    "inclusionAI/LemonDecider",
-   "abenzerps/Qwen-Image-2.1-Uncensored-Quantized"
+   "abenzerps/Qwen-Image-2.1-Uncensored-Quantized",
+   "nvidia/GR00T-N1.7-AppleToPlate-cosine40k-checkpoint-15000",
+   "openbmb/MiniCPM-V-4.7-35B-A3B",
+   "autotrust/JEV-35B",
+   "openbmb/MiniCPM-V-4.7-1B"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -1103,7 +1108,8 @@
    "LMCache/LMCache@v0.5.6rc5-rocm-torch210",
    "LMCache/LMCache@v0.5.6rc5-rocm",
    "LMCache/LMCache@v0.5.6rc5-musa",
-   "LMCache/LMCache@v0.5.6rc5-cu129"
+   "LMCache/LMCache@v0.5.6rc5-cu129",
+   "Dao-AILab/flash-attention@v2.8.3.post2"
   ],
   "papers": [
    "arxiv:2610.04198",
@@ -1508,7 +1514,34 @@
    "arxiv:2610.13205",
    "arxiv:2610.12582",
    "arxiv:2610.13447",
-   "arxiv:2610.12813"
+   "arxiv:2610.12813",
+   "arxiv:2609.39601",
+   "arxiv:2610.11765",
+   "arxiv:2610.13361",
+   "arxiv:2610.13166",
+   "arxiv:2610.09326",
+   "arxiv:2609.39600",
+   "arxiv:2610.13630",
+   "arxiv:2609.33304",
+   "arxiv:2609.36642",
+   "arxiv:2609.36616",
+   "arxiv:2610.13832",
+   "arxiv:2610.03308",
+   "arxiv:2609.35965",
+   "arxiv:2610.13134",
+   "arxiv:2610.13778",
+   "arxiv:2610.13708",
+   "arxiv:2610.13202",
+   "arxiv:2610.13060",
+   "arxiv:2610.12657",
+   "arxiv:2610.12527",
+   "arxiv:2610.12514",
+   "arxiv:2610.13735",
+   "arxiv:2610.13328",
+   "arxiv:2610.13325",
+   "arxiv:2610.13041",
+   "arxiv:2610.13035",
+   "arxiv:2610.12940"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -1661,7 +1694,28 @@
    "https://www.aitimes.com/news/articleView.html?idxno=216163",
    "https://www.aitimes.com/news/articleView.html?idxno=216167",
    "https://www.aitimes.com/news/articleView.html?idxno=216160",
-   "https://www.aitimes.com/news/articleView.html?idxno=216153"
+   "https://www.aitimes.com/news/articleView.html?idxno=216153",
+   "https://deepmind.google/blog/developing-gemini-4-argon-responsibly-and-safely/",
+   "https://deepmind.google/blog/gemini-4-argon-for-robotics/",
+   "https://deepmind.google/blog/introducing-gemini-4-argon/",
+   "https://simonwillison.net/2026/Oct/13/redesigning-source-control-at-anthropic/",
+   "https://simonwillison.net/2026/Oct/13/llm-gemini/",
+   "https://simonwillison.net/2026/Oct/13/web-edit/",
+   "https://simonwillison.net/2026/Oct/12/llm-meta-ai/",
+   "https://the-decoder.com/?p=41510",
+   "https://www.theverge.com/?p=1009862",
+   "https://www.theverge.com/?p=1010097",
+   "https://www.technologyreview.com/?p=1146366",
+   "https://www.aitimes.com/news/articleView.html?idxno=216183",
+   "https://www.aitimes.com/news/articleView.html?idxno=216220",
+   "https://www.aitimes.com/news/articleView.html?idxno=216200",
+   "https://www.aitimes.com/news/articleView.html?idxno=216211",
+   "https://www.aitimes.com/news/articleView.html?idxno=216196",
+   "https://www.aitimes.com/news/articleView.html?idxno=216205",
+   "https://www.aitimes.com/news/articleView.html?idxno=216213",
+   "https://www.aitimes.com/news/articleView.html?idxno=216217",
+   "https://www.aitimes.com/news/articleView.html?idxno=216203",
+   "https://www.aitimes.com/news/articleView.html?idxno=216199"
   ],
   "providers": [
    "claude-sonnet-5-5",
