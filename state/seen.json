@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-16T22:50:43+00:00",
+ "updated_at": "2026-10-17T22:17:29+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1086,7 +1086,15 @@
    "tencent/Qwen3-8B-DSpine-b16",
    "tencent/Hy-Memory-30B-A3B",
    "amazon/LAR-27B",
-   "amazon/LAR-9B"
+   "amazon/LAR-9B",
+   "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+   "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-MXFP8",
+   "nvidia/NVIDIA-Nemotron-Labs-Dory1.0-4B-BF16",
+   "swiss-ai/Apertus-v1.5-70B-RL",
+   "swiss-ai/Apertus-v1.5-8B-RL",
+   "OpenMOSS-Team/MOSS-Image-SFT",
+   "OpenMOSS-Team/MOSS-Image-Base",
+   "datalab-to/indra-ocr"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -1154,7 +1162,8 @@
    "ggml-org/llama.cpp@v0.7.0",
    "ollama/ollama@v0.40.5",
    "flashinfer-ai/flashinfer@v0.7.2",
-   "huggingface/transformers@v5.20.1"
+   "huggingface/transformers@v5.20.1",
+   "ollama/ollama@v0.40.6"
   ],
   "papers": [
    "arxiv:2610.04198",
@@ -1832,7 +1841,10 @@
    "arxiv:2610.21300",
    "arxiv:2610.21257",
    "arxiv:2610.20962",
-   "arxiv:2610.20681"
+   "arxiv:2610.20681",
+   "arxiv:2610.21261",
+   "arxiv:2610.22322",
+   "arxiv:2610.20195"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -2047,7 +2059,17 @@
    "https://www.aitimes.com/news/articleView.html?idxno=216337",
    "https://www.aitimes.com/news/articleView.html?idxno=216350",
    "https://www.aitimes.com/news/articleView.html?idxno=216341",
-   "https://www.aitimes.com/news/articleView.html?idxno=216322"
+   "https://www.aitimes.com/news/articleView.html?idxno=216322",
+   "https://the-decoder.com/?p=41659",
+   "https://www.marktechpost.com/?p=82980",
+   "https://www.marktechpost.com/?p=82977",
+   "https://www.marktechpost.com/?p=82974",
+   "https://www.marktechpost.com/?p=82970",
+   "https://www.aitimes.com/news/articleView.html?idxno=216368",
+   "https://www.aitimes.com/news/articleView.html?idxno=216365",
+   "https://www.aitimes.com/news/articleView.html?idxno=216352",
+   "https://www.aitimes.com/news/articleView.html?idxno=216359",
+   "https://www.aitimes.com/news/articleView.html?idxno=216361"
   ],
   "providers": [
    "claude-sonnet-5-5",
