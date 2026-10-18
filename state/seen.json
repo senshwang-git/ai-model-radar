@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-17T22:17:29+00:00",
+ "updated_at": "2026-10-18T22:25:32+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1094,7 +1094,17 @@
    "swiss-ai/Apertus-v1.5-8B-RL",
    "OpenMOSS-Team/MOSS-Image-SFT",
    "OpenMOSS-Team/MOSS-Image-Base",
-   "datalab-to/indra-ocr"
+   "datalab-to/indra-ocr",
+   "nvidia/cosmos3-nano-libero10-sdg-export-S5_2",
+   "nvidia/cosmos3-nano-libero10-sdg-export-S5_all",
+   "nvidia/cosmos3-nano-libero10-sdg-export-D5",
+   "nvidia/cosmos3-nano-libero10-sdg-export-S_best",
+   "nvidia/cosmos3-nano-libero10-sdg-export-S_worst",
+   "nvidia/cosmos3-nano-libero10-sdg-export-S_all",
+   "nvidia/cosmos3-nano-libero10-sdg-export-D_half",
+   "nvidia/cosmos3-nano-libero10-sdg-export-D2",
+   "nvidia/cosmos3-nano-libero10-sdg-export-S2",
+   "Comfy-Org/MOSS-Image"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -1163,7 +1173,8 @@
    "ollama/ollama@v0.40.5",
    "flashinfer-ai/flashinfer@v0.7.2",
    "huggingface/transformers@v5.20.1",
-   "ollama/ollama@v0.40.6"
+   "ollama/ollama@v0.40.6",
+   "vllm-project/vllm@v0.32.0"
   ],
   "papers": [
    "arxiv:2610.04198",
@@ -2069,7 +2080,13 @@
    "https://www.aitimes.com/news/articleView.html?idxno=216365",
    "https://www.aitimes.com/news/articleView.html?idxno=216352",
    "https://www.aitimes.com/news/articleView.html?idxno=216359",
-   "https://www.aitimes.com/news/articleView.html?idxno=216361"
+   "https://www.aitimes.com/news/articleView.html?idxno=216361",
+   "https://simonwillison.net/2026/Oct/17/web-edit/",
+   "https://www.marktechpost.com/?p=82989",
+   "https://www.aitimes.com/news/articleView.html?idxno=216380",
+   "https://www.aitimes.com/news/articleView.html?idxno=216371",
+   "https://www.aitimes.com/news/articleView.html?idxno=216369",
+   "https://www.aitimes.com/news/articleView.html?idxno=216370"
   ],
   "providers": [
    "claude-sonnet-5-5",
