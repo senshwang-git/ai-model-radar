@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-23T23:08:41+00:00",
+ "updated_at": "2026-10-24T22:28:37+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1143,7 +1143,10 @@
    "tencent/WeVisOne-VL-4B",
    "tencent/WeVisOne-VL-2B",
    "tencent/Hy-Nomas",
-   "Comfy-Org/Fibo-2.0"
+   "Comfy-Org/Fibo-2.0",
+   "tencent/Hy-Nomas-Diffusers",
+   "KRAFTON/Raon-1-mini-preview",
+   "ornith-ai/Ornith-1.5-122B"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -1222,7 +1225,8 @@
    "ai-dynamo/dynamo@v1.6.0",
    "ollama/ollama@v0.40.10",
    "ollama/ollama@v0.40.9",
-   "flashinfer-ai/flashinfer@v0.7.2.post1"
+   "flashinfer-ai/flashinfer@v0.7.2.post1",
+   "ollama/ollama@v0.40.11"
   ],
   "papers": [
    "arxiv:2610.04198",
@@ -2195,7 +2199,11 @@
    "arxiv:2610.30941",
    "arxiv:2610.30923",
    "arxiv:2610.30798",
-   "arxiv:2610.30760"
+   "arxiv:2610.30760",
+   "arxiv:2610.31198",
+   "arxiv:2610.23344",
+   "arxiv:2610.29934",
+   "arxiv:2610.28909"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -2509,7 +2517,19 @@
    "https://www.aitimes.com/news/articleView.html?idxno=216589",
    "https://www.aitimes.com/news/articleView.html?idxno=216591",
    "https://www.aitimes.com/news/articleView.html?idxno=216580",
-   "https://www.aitimes.com/news/articleView.html?idxno=216562"
+   "https://www.aitimes.com/news/articleView.html?idxno=216562",
+   "https://simonwillison.net/2026/Oct/24/battledrones/",
+   "https://the-decoder.com/?p=41914",
+   "https://www.marktechpost.com/?p=83592",
+   "https://www.marktechpost.com/?p=83583",
+   "https://www.marktechpost.com/?p=83579",
+   "https://www.aitimes.com/news/articleView.html?idxno=216618",
+   "https://www.aitimes.com/news/articleView.html?idxno=216615",
+   "https://www.aitimes.com/news/articleView.html?idxno=216607",
+   "https://www.aitimes.com/news/articleView.html?idxno=216605",
+   "https://www.aitimes.com/news/articleView.html?idxno=216606",
+   "https://www.aitimes.com/news/articleView.html?idxno=216604",
+   "https://www.aitimes.com/news/articleView.html?idxno=216603"
   ],
   "providers": [
    "claude-sonnet-5-5",
