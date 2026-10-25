@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-24T22:28:37+00:00",
+ "updated_at": "2026-10-25T22:32:39+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1146,7 +1146,9 @@
    "Comfy-Org/Fibo-2.0",
    "tencent/Hy-Nomas-Diffusers",
    "KRAFTON/Raon-1-mini-preview",
-   "ornith-ai/Ornith-1.5-122B"
+   "ornith-ai/Ornith-1.5-122B",
+   "Nanbeige/Nanbeige4.3-33B",
+   "HuggingFaceBio/Carbon-X"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -2203,7 +2205,19 @@
    "arxiv:2610.31198",
    "arxiv:2610.23344",
    "arxiv:2610.29934",
-   "arxiv:2610.28909"
+   "arxiv:2610.28909",
+   "arxiv:2610.04184",
+   "arxiv:2610.31372",
+   "arxiv:2610.20459",
+   "arxiv:2610.30882",
+   "arxiv:2610.31062",
+   "arxiv:2610.31651",
+   "arxiv:2610.31623",
+   "arxiv:2610.31576",
+   "arxiv:2610.30340",
+   "arxiv:2610.22722",
+   "arxiv:2610.25835",
+   "arxiv:2610.28950"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -2529,7 +2543,19 @@
    "https://www.aitimes.com/news/articleView.html?idxno=216605",
    "https://www.aitimes.com/news/articleView.html?idxno=216606",
    "https://www.aitimes.com/news/articleView.html?idxno=216604",
-   "https://www.aitimes.com/news/articleView.html?idxno=216603"
+   "https://www.aitimes.com/news/articleView.html?idxno=216603",
+   "https://the-decoder.com/?p=41970",
+   "https://the-decoder.com/?p=41933",
+   "https://www.marktechpost.com/?p=83616",
+   "https://www.marktechpost.com/?p=83613",
+   "https://www.marktechpost.com/?p=83609",
+   "https://www.marktechpost.com/?p=83605",
+   "https://techcrunch.com/?p=3181554",
+   "https://www.aitimes.com/news/articleView.html?idxno=216630",
+   "https://www.aitimes.com/news/articleView.html?idxno=216628",
+   "https://www.aitimes.com/news/articleView.html?idxno=216625",
+   "https://www.aitimes.com/news/articleView.html?idxno=216627",
+   "https://www.aitimes.com/news/articleView.html?idxno=216623"
   ],
   "providers": [
    "claude-sonnet-5-5",
