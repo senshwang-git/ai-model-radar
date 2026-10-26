@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-25T22:32:39+00:00",
+ "updated_at": "2026-10-26T23:52:17+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1148,7 +1148,14 @@
    "KRAFTON/Raon-1-mini-preview",
    "ornith-ai/Ornith-1.5-122B",
    "Nanbeige/Nanbeige4.3-33B",
-   "HuggingFaceBio/Carbon-X"
+   "HuggingFaceBio/Carbon-X",
+   "microsoft/CogACT-v2-RoboDojo",
+   "nvidia/MotionBricks",
+   "tencent/Hy-SimulMT-30B-A3B-Interleave",
+   "tencent/Hy-SimulMT-30B-A3B",
+   "inclusionAI/LBS-27B",
+   "briaai/Fibo-2.0-dev",
+   "FastVideo/FastH3-Omni-Comfy"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -1228,7 +1235,8 @@
    "ollama/ollama@v0.40.10",
    "ollama/ollama@v0.40.9",
    "flashinfer-ai/flashinfer@v0.7.2.post1",
-   "ollama/ollama@v0.40.11"
+   "ollama/ollama@v0.40.11",
+   "huggingface/transformers@v5.21"
   ],
   "papers": [
    "arxiv:2610.04198",
@@ -2217,7 +2225,31 @@
    "arxiv:2610.30340",
    "arxiv:2610.22722",
    "arxiv:2610.25835",
-   "arxiv:2610.28950"
+   "arxiv:2610.28950",
+   "arxiv:2610.31668",
+   "arxiv:2610.30932",
+   "arxiv:2610.31162",
+   "arxiv:2610.32253",
+   "arxiv:2610.32965",
+   "arxiv:2610.27103",
+   "arxiv:2610.31931",
+   "arxiv:2610.31066",
+   "arxiv:2610.31734",
+   "arxiv:2610.29477",
+   "arxiv:2610.32770",
+   "arxiv:2610.32002",
+   "arxiv:2610.31819",
+   "arxiv:2610.32573",
+   "arxiv:2610.32881",
+   "arxiv:2610.32638",
+   "arxiv:2610.32389",
+   "arxiv:2610.32109",
+   "arxiv:2610.32096",
+   "arxiv:2610.31840",
+   "arxiv:2610.31827",
+   "arxiv:2610.32871",
+   "arxiv:2610.32951",
+   "arxiv:2610.31712"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -2555,7 +2587,20 @@
    "https://www.aitimes.com/news/articleView.html?idxno=216628",
    "https://www.aitimes.com/news/articleView.html?idxno=216625",
    "https://www.aitimes.com/news/articleView.html?idxno=216627",
-   "https://www.aitimes.com/news/articleView.html?idxno=216623"
+   "https://www.aitimes.com/news/articleView.html?idxno=216623",
+   "https://openai.com/index/introducing-gpt-6-1-terra",
+   "https://the-decoder.com/?p=42016",
+   "https://www.marktechpost.com/?p=83625",
+   "https://www.marktechpost.com/?p=83621",
+   "https://www.aitimes.com/news/articleView.html?idxno=216690",
+   "https://www.aitimes.com/news/articleView.html?idxno=216689",
+   "https://www.aitimes.com/news/articleView.html?idxno=216671",
+   "https://www.aitimes.com/news/articleView.html?idxno=216683",
+   "https://www.aitimes.com/news/articleView.html?idxno=216648",
+   "https://www.aitimes.com/news/articleView.html?idxno=216679",
+   "https://www.aitimes.com/news/articleView.html?idxno=216665",
+   "https://www.aitimes.com/news/articleView.html?idxno=216645",
+   "https://www.aitimes.com/news/articleView.html?idxno=216657"
   ],
   "providers": [
    "claude-sonnet-5-5",
