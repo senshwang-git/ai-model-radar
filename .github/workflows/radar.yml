@@ -6,11 +6,17 @@ on:
     # start well before the 06:00 KST delivery time; the run collects and
     # summarizes, then holds notifications until 06:00 KST (--deliver-at).
     # The second entry is a backup that only acts if the first never ran
-    # (--once-per-day).
+    # (--once-per-day). An external scheduler also dispatches the workflow
+    # with scheduled=true at 05:50 KST for an on-time start (see README);
+    # whichever starts first does the day's run, the others skip.
     - cron: "17 20 * * *"   # 05:17 KST
     - cron: "41 21 * * *"   # 06:41 KST (backup)
   workflow_dispatch:
     inputs:
+      scheduled:
+        description: "Daily run (used by the external 05:50 KST trigger): deliver at 06:00 KST, once per day"
+        type: boolean
+        default: false
       notify:
         description: "Send notifications (uncheck to only update state)"
         type: boolean
@@ -84,7 +90,7 @@ jobs:
             python -m radar --since "${range%%..*}" --until "${range##*..}" $extra
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.notify }}" = "false" ]; then
             python -m radar --no-notify
-          elif [ "${{ github.event_name }}" = "schedule" ]; then
+          elif [ "${{ github.event_name }}" = "schedule" ] || [ "${{ inputs.scheduled }}" = "true" ]; then
             python -m radar --deliver-at 06:00 --once-per-day
           else
             python -m radar

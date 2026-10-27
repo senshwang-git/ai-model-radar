@@ -39,13 +39,30 @@ def _hf_daily(cfg: dict) -> list[Item]:
     return items
 
 
+ARXIV_MIN_INTERVAL = 5.0  # seconds between arXiv API calls (they ask for >= 3)
+_last_arxiv_call = 0.0
+
+
+def _arxiv_get(url: str) -> bytes:
+    """Rate-limited arXiv request; retries 429s with Retry-After/backoff.
+    GitHub runners share IPs, so arXiv throttles them fairly often."""
+    global _last_arxiv_call
+    wait = _last_arxiv_call + ARXIV_MIN_INTERVAL - time.monotonic()
+    if wait > 0:
+        time.sleep(wait)
+    try:
+        return fetch(url, retries=4, timeout=60)
+    finally:
+        _last_arxiv_call = time.monotonic()
+
+
 def _arxiv(cfg: dict, query: str | None = None, group: str = "arXiv",
            topics: list[str] | None = None) -> list[Item]:
     q = " ".join((query or cfg.get("query", "")).split())
     params = urllib.parse.urlencode({
         "search_query": q, "sortBy": "submittedDate", "sortOrder": "descending",
         "max_results": int(cfg.get("max_results", 50))})
-    entries = parse(fetch(f"https://export.arxiv.org/api/query?{params}"))
+    entries = parse(_arxiv_get(f"https://export.arxiv.org/api/query?{params}"))
     items = []
     for e in entries:
         # e.g. http://arxiv.org/abs/2510.01234v2 -> 2510.01234
@@ -85,7 +102,6 @@ def collect(cfg: dict) -> list[Item]:
             continue
         seen: set[str] = set()
         for query in topic_queries(topic):
-            time.sleep(3)  # arXiv asks for a few seconds between API calls
             try:
                 found = _arxiv({"max_results": topic.get("arxiv_max_results", 20)},
                                query=query, group=f"arXiv · {topic['name']}",

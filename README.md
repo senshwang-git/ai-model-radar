@@ -71,6 +71,21 @@ Settings → Actions → General → Workflow permissions가 **Read and write**�
 
 `config.yaml`에서 조직, 레포, RSS 피드, 키워드, trending 개수 등을 수정하세요.
 
+## 06:00 정시 발송 (외부 스케줄러)
+
+GitHub 예약 실행은 몇 시간씩 늦게 시작할 수 있어, 외부 스케줄러가 매일 05:50 KST에 워크플로를 직접 실행합니다. 같은 날 먼저 시작한 실행 하나만 동작하고 나머지(GitHub 예약 실행 포함)는 건너뜁니다.
+
+1. GitHub → Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate
+   - Repository access: **Only select repositories** → `ai-model-radar`
+   - Permissions → Repository permissions → **Actions: Read and write** (나머지는 없음)
+2. [cron-job.org](https://cron-job.org) 무료 가입 → Create cronjob
+   - URL: `https://api.github.com/repos/senshwang-git/ai-model-radar/actions/workflows/radar.yml/dispatches`
+   - Schedule: 매일 05:50, Time zone `Asia/Seoul`
+   - Advanced → Request method `POST`
+   - Headers: `Authorization: Bearer <토큰>`, `Accept: application/vnd.github+json`, `X-GitHub-Api-Version: 2022-11-28`
+   - Request body: `{"ref":"main","inputs":{"scheduled":"true"}}`
+3. "Test run"이 HTTP 204면 성공입니다 (Actions 탭에 실행이 생김).
+
 ## 로컬 실행
 
 ```bash

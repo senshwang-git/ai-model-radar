@@ -451,3 +451,19 @@ def test_wait_until_sleeps_only_for_near_future(monkeypatch):
     cli.wait_until((now - timedelta(minutes=5)).strftime("%H:%M"))   # already past
     cli.wait_until((now + timedelta(hours=5)).strftime("%H:%M"))     # too far ahead
     assert slept == []
+
+
+def test_retry_delay_and_arxiv_throttle(monkeypatch):
+    from radar.http import retry_delay
+    from radar.sources import papers as p
+    assert retry_delay("30", 0) == 30 and retry_delay("999", 0) == 120
+    assert retry_delay(None, 0) == 10 and retry_delay(None, 2) == 40
+    assert retry_delay("Wed, 21 Oct 2026 07:28:00 GMT", 1) == 20
+
+    slept, calls = [], []
+    monkeypatch.setattr(p.time, "sleep", lambda s: slept.append(s))
+    monkeypatch.setattr(p, "fetch", lambda url, **kw: calls.append(kw) or b"<feed/>")
+    p._last_arxiv_call = 0.0
+    p._arxiv_get("u1")
+    p._arxiv_get("u2")
+    assert calls[0]["retries"] == 4 and slept and slept[-1] > 4  # second call waited

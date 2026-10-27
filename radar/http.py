@@ -29,6 +29,17 @@ def decode_body(body: bytes, encoding: str = "") -> bytes:
     return body
 
 
+def retry_delay(retry_after: str | None, attempt: int, cap: int = 120) -> float:
+    """Seconds to wait after a 429/503: the server's Retry-After (seconds) if
+    given, else 10 s, 20 s, 40 s... capped at `cap`."""
+    try:
+        if retry_after is not None:
+            return min(cap, max(1.0, float(retry_after)))
+    except ValueError:
+        pass  # HTTP-date form; fall back to backoff
+    return min(cap, 10.0 * 2 ** attempt)
+
+
 def fetch_response(url: str, headers: dict | None = None, data: bytes | None = None,
                    method: str | None = None, timeout: int = 30,
                    retries: int = 3) -> tuple[bytes, dict]:
@@ -48,9 +59,13 @@ def fetch_response(url: str, headers: dict | None = None, data: bytes | None = N
             # 4xx (other than rate limiting) will not succeed on retry.
             if e.code < 500 and e.code != 429:
                 break
+            if e.code in (429, 503) and attempt + 1 < retries:
+                time.sleep(retry_delay(e.headers.get("Retry-After"), attempt))
+                continue
         except (urllib.error.URLError, TimeoutError) as e:
             last_err = e
-        time.sleep(2 ** attempt)
+        if attempt + 1 < retries:
+            time.sleep(2 ** attempt)
     assert last_err is not None
     raise last_err
 
