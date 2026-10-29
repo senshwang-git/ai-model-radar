@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-29T00:21:19+00:00",
+ "updated_at": "2026-10-29T21:00:03+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1173,7 +1173,10 @@
    "stabilityai/stable-diffusion-3.5-medium-amdnpu-medusa",
    "Lightricks/LTX-2-Marking",
    "LiquidAI/LFM3-1.7B",
-   "openbmb/MiniCPM-OCR-1.0"
+   "openbmb/MiniCPM-OCR-1.0",
+   "mistralai/Mistral-Large-4-1T-A52B",
+   "LiquidAI/LFM3-Omni-2B",
+   "LiquidAI/LFM3-VL-2B"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -1258,7 +1261,10 @@
    "ai-dynamo/dynamo@v1.6.1",
    "ggml-org/llama.cpp@v0.8.0",
    "ollama/ollama@v0.40.12",
-   "pytorch/pytorch@v2.15.0"
+   "pytorch/pytorch@v2.15.0",
+   "huggingface/transformers@v5.22.0",
+   "huggingface/transformers@v5.21.1",
+   "ollama/ollama@v0.40.13"
   ],
   "papers": [
    "arxiv:2610.04198",
@@ -2396,7 +2402,20 @@
    "arxiv:2610.36564",
    "arxiv:2610.36383",
    "arxiv:2610.36339",
-   "arxiv:2610.35955"
+   "arxiv:2610.35955",
+   "arxiv:2610.32749",
+   "arxiv:2610.35684",
+   "arxiv:2610.31670",
+   "arxiv:2610.22507",
+   "arxiv:2610.37230",
+   "arxiv:2610.36466",
+   "arxiv:2610.36269",
+   "arxiv:2610.37649",
+   "arxiv:2610.34724",
+   "arxiv:2610.37585",
+   "arxiv:2602.10657",
+   "arxiv:2610.34674",
+   "arxiv:2610.34714"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -2790,7 +2809,23 @@
    "https://www.aitimes.com/news/articleView.html?idxno=216755",
    "https://www.aitimes.com/news/articleView.html?idxno=216756",
    "https://www.aitimes.com/news/articleView.html?idxno=216736",
-   "https://www.aitimes.com/news/articleView.html?idxno=216735"
+   "https://www.aitimes.com/news/articleView.html?idxno=216735",
+   "https://huggingface.co/blog/anydecisionmodel",
+   "https://the-decoder.com/?p=42140",
+   "https://www.marktechpost.com/?p=83684",
+   "https://www.marktechpost.com/?p=83681",
+   "https://www.marktechpost.com/?p=83678",
+   "https://www.marktechpost.com/?p=83674",
+   "https://www.marktechpost.com/?p=83668",
+   "https://techcrunch.com/?p=3182668",
+   "https://techcrunch.com/?p=3183106",
+   "https://www.aitimes.com/news/articleView.html?idxno=216802",
+   "https://www.aitimes.com/news/articleView.html?idxno=216779",
+   "https://www.aitimes.com/news/articleView.html?idxno=216808",
+   "https://www.aitimes.com/news/articleView.html?idxno=216798",
+   "https://www.aitimes.com/news/articleView.html?idxno=216800",
+   "https://www.aitimes.com/news/articleView.html?idxno=216792",
+   "https://www.aitimes.com/news/articleView.html?idxno=216789"
   ],
   "providers": [
    "claude-sonnet-5-5",
