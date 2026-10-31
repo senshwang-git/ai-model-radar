@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-30T21:01:35+00:00",
+ "updated_at": "2026-10-31T21:00:16+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1183,7 +1183,9 @@
    "Pika-Labs/Pika-H3-Flex",
    "Diffuspace/Clover-35B-A3B-Preview",
    "LiquidAI/LFM3-Audio-2B",
-   "OliviaRossi/Minimax-h3_Singularity-x-10Eros-Max_PRISM"
+   "OliviaRossi/Minimax-h3_Singularity-x-10Eros-Max_PRISM",
+   "speridlabs/idol",
+   "Edge0/Audio8-TTS-Realistic-0.6b"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -2479,7 +2481,13 @@
    "arxiv:2610.37810",
    "arxiv:2610.40494",
    "arxiv:2610.38739",
-   "arxiv:2610.38196"
+   "arxiv:2610.38196",
+   "arxiv:2610.38342",
+   "arxiv:2610.38678",
+   "arxiv:2610.39664",
+   "arxiv:2601.15351",
+   "arxiv:2610.34186",
+   "arxiv:2610.30161"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -2900,7 +2908,11 @@
    "https://www.aitimes.com/news/articleView.html?idxno=216824",
    "https://www.aitimes.com/news/articleView.html?idxno=216821",
    "https://www.aitimes.com/news/articleView.html?idxno=216820",
-   "https://www.aitimes.com/news/articleView.html?idxno=216819"
+   "https://www.aitimes.com/news/articleView.html?idxno=216819",
+   "https://simonwillison.net/2026/Oct/30/nesformer/",
+   "https://www.marktechpost.com/?p=83706",
+   "https://www.aitimes.com/news/articleView.html?idxno=216851",
+   "https://www.aitimes.com/news/articleView.html?idxno=216844"
   ],
   "providers": [
    "claude-sonnet-5-5",
