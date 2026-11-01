@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-31T21:00:16+00:00",
+ "updated_at": "2026-11-01T21:00:04+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1185,7 +1185,10 @@
    "LiquidAI/LFM3-Audio-2B",
    "OliviaRossi/Minimax-h3_Singularity-x-10Eros-Max_PRISM",
    "speridlabs/idol",
-   "Edge0/Audio8-TTS-Realistic-0.6b"
+   "Edge0/Audio8-TTS-Realistic-0.6b",
+   "burner22/numbat",
+   "LiquidAI/d1-2B",
+   "Efficient-Large-Model/Open-H3-Regenerate-2K"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -2912,7 +2915,12 @@
    "https://simonwillison.net/2026/Oct/30/nesformer/",
    "https://www.marktechpost.com/?p=83706",
    "https://www.aitimes.com/news/articleView.html?idxno=216851",
-   "https://www.aitimes.com/news/articleView.html?idxno=216844"
+   "https://www.aitimes.com/news/articleView.html?idxno=216844",
+   "https://simonwillison.net/2026/Oct/31/datasette-llm/",
+   "https://www.marktechpost.com/?p=83712",
+   "https://www.marktechpost.com/?p=83709",
+   "https://www.aitimes.com/news/articleView.html?idxno=216861",
+   "https://www.aitimes.com/news/articleView.html?idxno=216859"
   ],
   "providers": [
    "claude-sonnet-5-5",
