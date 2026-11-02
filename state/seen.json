@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-01T21:00:04+00:00",
+ "updated_at": "2026-11-02T21:00:12+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1188,7 +1188,12 @@
    "Edge0/Audio8-TTS-Realistic-0.6b",
    "burner22/numbat",
    "LiquidAI/d1-2B",
-   "Efficient-Large-Model/Open-H3-Regenerate-2K"
+   "Efficient-Large-Model/Open-H3-Regenerate-2K",
+   "Edge0/Audio8-TTS-Realistic-Air",
+   "FusionCow/Sulphur-3",
+   "OBLITERATUS/DeepSeek-V4.1-Flash-1017-obliterated",
+   "sensenova/SenseNova-Loop-9B-Preview",
+   "xiaomi-research/Xiaomi-OCR-0"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -1278,7 +1283,8 @@
    "huggingface/transformers@v5.21.1",
    "ollama/ollama@v0.40.13",
    "huggingface/transformers@v5.22.1",
-   "microsoft/DeepSpeed@v0.19.9"
+   "microsoft/DeepSpeed@v0.19.9",
+   "vllm-project/vllm@v0.33.0rc3"
   ],
   "papers": [
    "arxiv:2610.04198",
@@ -2490,7 +2496,45 @@
    "arxiv:2610.39664",
    "arxiv:2601.15351",
    "arxiv:2610.34186",
-   "arxiv:2610.30161"
+   "arxiv:2610.30161",
+   "arxiv:2610.36545",
+   "arxiv:2610.22740",
+   "arxiv:2610.39497",
+   "arxiv:2610.42053",
+   "arxiv:2610.40738",
+   "arxiv:2610.16927",
+   "arxiv:2610.42149",
+   "arxiv:2610.40339",
+   "arxiv:2610.40373",
+   "arxiv:2610.35850",
+   "arxiv:2610.37481",
+   "arxiv:2610.42136",
+   "arxiv:2610.34722",
+   "arxiv:2610.37918",
+   "arxiv:2610.40799",
+   "arxiv:2610.40636",
+   "arxiv:2610.40748",
+   "arxiv:2610.31222",
+   "arxiv:2610.40945",
+   "arxiv:2610.41841",
+   "arxiv:2610.42116",
+   "arxiv:2610.42112",
+   "arxiv:2610.41850",
+   "arxiv:2610.41825",
+   "arxiv:2610.41480",
+   "arxiv:2610.41291",
+   "arxiv:2610.41177",
+   "arxiv:2610.41160",
+   "arxiv:2610.40943",
+   "arxiv:2610.42147",
+   "arxiv:2610.41508",
+   "arxiv:2610.41420",
+   "arxiv:2610.41359",
+   "arxiv:2610.40939",
+   "arxiv:2610.42148",
+   "arxiv:2610.41919",
+   "arxiv:2610.41511",
+   "arxiv:2610.40946"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -2920,7 +2964,17 @@
    "https://www.marktechpost.com/?p=83712",
    "https://www.marktechpost.com/?p=83709",
    "https://www.aitimes.com/news/articleView.html?idxno=216861",
-   "https://www.aitimes.com/news/articleView.html?idxno=216859"
+   "https://www.aitimes.com/news/articleView.html?idxno=216859",
+   "https://deepmind.google/blog/speeding-up-planning-decisions-with-ai/",
+   "https://simonwillison.net/2026/Nov/2/census-bureau-super-intelligence/",
+   "https://www.marktechpost.com/?p=83723",
+   "https://www.marktechpost.com/?p=83716",
+   "https://www.aitimes.com/news/articleView.html?idxno=216893",
+   "https://www.aitimes.com/news/articleView.html?idxno=216915",
+   "https://www.aitimes.com/news/articleView.html?idxno=216899",
+   "https://www.aitimes.com/news/articleView.html?idxno=216916",
+   "https://www.aitimes.com/news/articleView.html?idxno=216888",
+   "https://www.aitimes.com/news/articleView.html?idxno=216894"
   ],
   "providers": [
    "claude-sonnet-5-5",
