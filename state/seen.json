@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-06T21:00:01+00:00",
+ "updated_at": "2026-11-07T21:00:08+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1210,7 +1210,11 @@
    "ccore/Qwen3.5-4B-GLB-3D-Coder",
    "kakaocorp/kanana-2-v-decide-3b-2611",
    "ByteDance-Seed/Cola2",
-   "webAI-Official/TwIL-8B"
+   "webAI-Official/TwIL-8B",
+   "tencent/Qwen3.8-27B-DSpine-b16",
+   "xtools-at/DeepSeek-V4-Pro-Qwen3.5-9B-UNCENSORED-heretic",
+   "NousResearch/Arete-27B",
+   "Viggle/Viggle-Remake"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -2764,7 +2768,10 @@
    "arxiv:2611.07198",
    "arxiv:2611.07105",
    "arxiv:2611.06977",
-   "arxiv:2611.07570"
+   "arxiv:2611.07570",
+   "arxiv:2611.05376",
+   "arxiv:2611.07909",
+   "arxiv:2611.03228"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -3257,7 +3264,12 @@
    "https://www.aitimes.com/news/articleView.html?idxno=217107",
    "https://www.aitimes.com/news/articleView.html?idxno=217080",
    "https://www.aitimes.com/news/articleView.html?idxno=217104",
-   "https://www.aitimes.com/news/articleView.html?idxno=217087"
+   "https://www.aitimes.com/news/articleView.html?idxno=217087",
+   "https://the-decoder.com/?p=42554",
+   "https://www.marktechpost.com/?p=83793",
+   "https://www.aitimes.com/news/articleView.html?idxno=217132",
+   "https://www.aitimes.com/news/articleView.html?idxno=217131",
+   "https://www.aitimes.com/news/articleView.html?idxno=217114"
   ],
   "providers": [
    "claude-sonnet-5-5",
