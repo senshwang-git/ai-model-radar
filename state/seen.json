@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-08T21:00:01+00:00",
+ "updated_at": "2026-11-09T21:00:08+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -2775,7 +2775,37 @@
    "arxiv:2611.03228",
    "arxiv:2611.08376",
    "arxiv:2611.08237",
-   "arxiv:2611.04527"
+   "arxiv:2611.04527",
+   "arxiv:2611.08264",
+   "arxiv:2611.03953",
+   "arxiv:2611.06856",
+   "arxiv:2611.07624",
+   "arxiv:2611.01182",
+   "arxiv:2611.06748",
+   "arxiv:2611.06043",
+   "arxiv:2611.08175",
+   "arxiv:2611.06808",
+   "arxiv:2611.09894",
+   "arxiv:2610.35959",
+   "arxiv:2611.09714",
+   "arxiv:2611.09506",
+   "arxiv:2611.09825",
+   "arxiv:2611.09722",
+   "arxiv:2611.09598",
+   "arxiv:2611.09474",
+   "arxiv:2611.09109",
+   "arxiv:2611.08770",
+   "arxiv:2611.08669",
+   "arxiv:2611.08638",
+   "arxiv:2611.09715",
+   "arxiv:2611.09709",
+   "arxiv:2611.09522",
+   "arxiv:2611.09028",
+   "arxiv:2611.09008",
+   "arxiv:2611.08684",
+   "arxiv:2611.09424",
+   "arxiv:2611.09254",
+   "arxiv:2611.08713"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -3277,7 +3307,24 @@
    "https://www.marktechpost.com/?p=83809",
    "https://www.marktechpost.com/?p=83799",
    "https://www.aitimes.com/news/articleView.html?idxno=217146",
-   "https://www.aitimes.com/news/articleView.html?idxno=217140"
+   "https://www.aitimes.com/news/articleView.html?idxno=217140",
+   "https://blogs.nvidia.com/?p=99744",
+   "https://simonwillison.net/2026/Nov/9/details-summary/",
+   "https://the-decoder.com/?p=42640",
+   "https://the-decoder.com/?p=42632",
+   "https://the-decoder.com/?p=42624",
+   "https://www.marktechpost.com/?p=83822",
+   "https://techcrunch.com/?p=3186369",
+   "https://techcrunch.com/?p=3186298",
+   "https://www.theverge.com/?p=1030005",
+   "https://www.theverge.com/?p=1029773",
+   "https://www.aitimes.com/news/articleView.html?idxno=217188",
+   "https://www.aitimes.com/news/articleView.html?idxno=217179",
+   "https://www.aitimes.com/news/articleView.html?idxno=217182",
+   "https://www.aitimes.com/news/articleView.html?idxno=217181",
+   "https://www.aitimes.com/news/articleView.html?idxno=217167",
+   "https://www.aitimes.com/news/articleView.html?idxno=217166",
+   "https://www.aitimes.com/news/articleView.html?idxno=217158"
   ],
   "providers": [
    "claude-sonnet-5-5",
@@ -3292,7 +3339,8 @@
    "claude-opus-4-6",
    "claude-opus-4-5-20251101",
    "claude-haiku-4-5-20251001",
-   "claude-haiku-5-5"
+   "claude-haiku-5-5",
+   "claude-fable-5-2"
   ]
  }
 }
