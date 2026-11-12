@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-11T21:45:56+00:00",
+ "updated_at": "2026-11-12T21:00:02+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1225,7 +1225,12 @@
    "inclusionAI/ZoomGain-4B",
    "Comfy-Org/MiniMax-H3-Image",
    "Cactus-Compute/mirage",
-   "Comfy-Org/RelayVSR"
+   "Comfy-Org/RelayVSR",
+   "ibm-granite/granite-4.1-8b-llmon-preview",
+   "ibm-granite/granite-4.1-3b-llmon-preview",
+   "Zyphra/ZONOS3-Mini",
+   "facebook/dinov3-vitl16-pretrain-lvd1689m",
+   "facebook/sam-3d-body-dinov3"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -1331,7 +1336,12 @@
    "ai-dynamo/dynamo@v1.6.2",
    "ollama/ollama@v0.40.16",
    "flashinfer-ai/flashinfer@v0.7.4",
-   "LMCache/LMCache@v0.5.7"
+   "LMCache/LMCache@v0.5.7",
+   "LMCache/LMCache@v0.5.7.post1-xpu",
+   "LMCache/LMCache@v0.5.7.post1-rocm-torch210",
+   "LMCache/LMCache@v0.5.7.post1-rbln",
+   "LMCache/LMCache@v0.5.7.post1-musa",
+   "LMCache/LMCache@v0.5.7.post1"
   ],
   "papers": [
    "arxiv:2610.04198",
@@ -2913,7 +2923,17 @@
    "arxiv:2611.13762",
    "arxiv:2611.13644",
    "arxiv:2611.13641",
-   "arxiv:2611.13509"
+   "arxiv:2611.13509",
+   "arxiv:2610.40394",
+   "arxiv:2611.13410",
+   "arxiv:2610.39671",
+   "arxiv:2608.22237",
+   "arxiv:2611.13028",
+   "arxiv:2611.13001",
+   "arxiv:2611.10866",
+   "arxiv:2611.13576",
+   "arxiv:2611.01527",
+   "arxiv:2611.09501"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -3466,7 +3486,19 @@
    "https://www.theverge.com/?p=1031524",
    "https://www.aitimes.com/news/articleView.html?idxno=217271",
    "https://www.aitimes.com/news/articleView.html?idxno=217274",
-   "https://www.aitimes.com/news/articleView.html?idxno=217251"
+   "https://www.aitimes.com/news/articleView.html?idxno=217251",
+   "https://deepmind.google/blog/introducing-gemini-4-hydrogen/",
+   "https://simonwillison.net/2026/Nov/11/gemini-decisions-api/",
+   "https://the-decoder.com/?p=42781",
+   "https://the-decoder.com/?p=42763",
+   "https://the-decoder.com/?p=42756",
+   "https://www.marktechpost.com/?p=83871",
+   "https://techcrunch.com/?p=3188037",
+   "https://www.aitimes.com/news/articleView.html?idxno=217309",
+   "https://www.aitimes.com/news/articleView.html?idxno=217321",
+   "https://www.aitimes.com/news/articleView.html?idxno=217334",
+   "https://www.aitimes.com/news/articleView.html?idxno=217338",
+   "https://www.aitimes.com/news/articleView.html?idxno=217320"
   ],
   "providers": [
    "claude-sonnet-5-5",
