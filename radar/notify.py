@@ -40,6 +40,14 @@ def describe_token(raw: str) -> str:
             f"format_ok={bool(TOKEN_RE.match(t))} had_whitespace={ws}")
 
 
+class TelegramError(RuntimeError):
+    """Sending stopped part-way; `unsent` holds the messages not delivered."""
+
+    def __init__(self, msg: str, unsent: list[str]):
+        super().__init__(msg)
+        self.unsent = unsent
+
+
 def telegram(chunks: list[str]) -> bool:
     raw = os.environ.get("TELEGRAM_BOT_TOKEN", "")
     token = clean_token(raw)
@@ -51,15 +59,19 @@ def telegram(chunks: list[str]) -> bool:
         print(f"[notify] warning: TELEGRAM_BOT_TOKEN looks malformed ({describe_token(raw)})")
     for i, text in enumerate(chunks):
         try:
+            # Generous timeout/retries: a slow Telegram API once timed out all
+            # three 30 s attempts and the day's digest was lost.
             post_json(f"https://api.telegram.org/bot{token}/sendMessage",
                       {"chat_id": chat, "text": text, "parse_mode": "HTML",
-                       "disable_web_page_preview": True})
+                       "disable_web_page_preview": True}, timeout=60, retries=5)
         except urllib.error.HTTPError as e:
             # Surface Telegram's reason, e.g. "Bad Request: chat not found".
             msg = f"telegram HTTP {e.code}: {e.read().decode(errors='replace')}"
             if e.code == 401:
                 msg += f" [token check: {describe_token(raw)}]"
-            raise RuntimeError(msg) from None
+            raise TelegramError(msg, chunks[i:]) from None
+        except Exception as e:
+            raise TelegramError(f"{e}", chunks[i:]) from None
         if i + 1 < len(chunks):
             time.sleep(1.1)  # stay under Telegram's per-chat rate limit
     print(f"[notify] telegram: sent {len(chunks)} message(s)")

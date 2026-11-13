@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
 import time
@@ -74,6 +75,11 @@ def main(argv: list[str] | None = None) -> int:
         return lookback(collected, errors, cfg, args.since, args.until or args.since,
                         send_telegram=args.send_telegram)
 
+    pending_path = Path(args.state).with_name("pending_telegram.json")
+    telegram_failed = False
+    if not args.dry_run and not args.no_notify and not flush_pending(pending_path):
+        telegram_failed = True
+
     fresh = state.diff(collected)
     # Items from orgs/feeds/providers never seen before are recorded silently.
     new = [it for it in fresh if not state.is_new_bucket(it)]
@@ -109,7 +115,9 @@ def main(argv: list[str] | None = None) -> int:
                 notify.telegram(out.telegram)
             except Exception as e:
                 failures += 1
+                telegram_failed = True
                 print(f"[notify] telegram failed: {e}")
+                save_pending(pending_path, getattr(e, "unsent", out.telegram))
         if attempts and failures == attempts:
             # Keep state unchanged so the next run retries these items.
             print("[notify] all notifiers failed; state not updated")
@@ -117,8 +125,42 @@ def main(argv: list[str] | None = None) -> int:
 
     state.record(collected)
     state.save()
+    if telegram_failed:
+        # Undelivered messages are kept in pending_telegram.json and resent
+        # first thing on the next run; mark this run red so it is noticed.
+        return 1
     # Fail the run only if every enabled source failed.
     return 1 if errors and not collected else 0
+
+
+def save_pending(path: Path, chunks: list[str]) -> None:
+    """Queue undelivered Telegram messages for the next run."""
+    old = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(old + list(chunks), ensure_ascii=False, indent=1),
+                    encoding="utf-8")
+    print(f"[notify] queued {len(chunks)} undelivered telegram message(s) for the next run")
+
+
+def flush_pending(path: Path) -> bool:
+    """Send Telegram messages left over from a failed run. False if still failing."""
+    if not path.exists():
+        return True
+    chunks = json.loads(path.read_text(encoding="utf-8"))
+    if not chunks:
+        path.unlink()
+        return True
+    print(f"[notify] resending {len(chunks)} undelivered telegram message(s)")
+    try:
+        if notify.telegram(chunks):
+            path.unlink()
+            return True
+        return True  # Telegram not configured; leave the queue alone
+    except Exception as e:
+        print(f"[notify] resend failed: {e}")
+        path.write_text(json.dumps(getattr(e, "unsent", chunks), ensure_ascii=False,
+                                   indent=1), encoding="utf-8")
+        return False
 
 
 KST = timezone(timedelta(hours=9))

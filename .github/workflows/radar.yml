@@ -97,7 +97,9 @@ jobs:
           fi
 
       - name: Commit state
-        if: ${{ inputs.test_telegram != true && inputs.lookback_date == '' }}
+        # !cancelled(): also save state (incl. queued undelivered messages) when
+        # the scan step exits non-zero because a notification failed.
+        if: ${{ !cancelled() && inputs.test_telegram != true && inputs.lookback_date == '' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

@@ -467,3 +467,37 @@ def test_retry_delay_and_arxiv_throttle(monkeypatch):
     p._arxiv_get("u1")
     p._arxiv_get("u2")
     assert calls[0]["retries"] == 4 and slept and slept[-1] > 4  # second call waited
+
+
+def test_failed_telegram_is_queued_and_resent(tmp_path, monkeypatch):
+    from radar import notify as n
+    cfg = tmp_path / "c.yaml"
+    cfg.write_text("news:\n  enabled: true\nnotify: {}\n")
+    state = tmp_path / "s.json"
+    state.write_text(json.dumps({"buckets": ["news/F"], "seen": {"news": []}}))
+    pending = tmp_path / "pending_telegram.json"
+    items = [[Item("news", "1", "one", group="F")]]
+
+    class FakeNews:
+        @staticmethod
+        def collect(_):
+            return items[0]
+
+    monkeypatch.setattr(cli, "SOURCES", {"news": FakeNews})
+    monkeypatch.setattr(cli.notify, "github_issue", lambda *a: None)
+
+    def boom(chunks):
+        raise n.TelegramError("timed out", chunks)
+
+    monkeypatch.setattr(cli.notify, "telegram", boom)
+    argv = ["--config", str(cfg), "--state", str(state)]
+    assert cli.main(argv) == 1                      # red run
+    queued = json.loads(pending.read_text())
+    assert queued and "one" in queued[0]
+    assert json.loads(state.read_text())["seen"]["news"] == ["1"]  # issue went out
+
+    sent = []
+    monkeypatch.setattr(cli.notify, "telegram", lambda c: sent.append(list(c)) or True)
+    items[0] = []                                   # nothing new next day
+    assert cli.main(argv) == 0
+    assert sent and "one" in sent[0][0] and not pending.exists()
