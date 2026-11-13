@@ -63,6 +63,8 @@ def telegram(chunks: list[str]) -> bool:
             # three 30 s attempts and the day's digest was lost.
             post_json(f"https://api.telegram.org/bot{token}/sendMessage",
                       {"chat_id": chat, "text": text, "parse_mode": "HTML",
+                       # Current Bot API field; the legacy one is kept for older servers.
+                       "link_preview_options": {"is_disabled": True},
                        "disable_web_page_preview": True}, timeout=60, retries=5)
         except urllib.error.HTTPError as e:
             # Surface Telegram's reason, e.g. "Bad Request: chat not found".
