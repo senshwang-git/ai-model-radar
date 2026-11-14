@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-13T21:01:34+00:00",
+ "updated_at": "2026-11-14T21:00:01+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1235,7 +1235,11 @@
    "inclusionAI/Duo-1.0-causal-base",
    "inclusionAI/Duo-1.0-distill",
    "inclusionAI/Duo-1.2-causal-base",
-   "thinkingmachines/Inkling-2-Small"
+   "thinkingmachines/Inkling-2-Small",
+   "chatrlabs/Qwen-Image-2.1-Uncensored-Omni-Quantized",
+   "higurashi-ai/Haru-4B",
+   "adventists-ai/Sophon-Realtime-v1",
+   "meituan-longcat/LongCat-2.5"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -2984,7 +2988,9 @@
    "arxiv:2611.14969",
    "arxiv:2611.14962",
    "arxiv:2611.14904",
-   "arxiv:2611.14776"
+   "arxiv:2611.14776",
+   "arxiv:2611.08318",
+   "arxiv:2611.17334"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -3562,7 +3568,11 @@
    "https://www.aitimes.com/news/articleView.html?idxno=217369",
    "https://www.aitimes.com/news/articleView.html?idxno=217379",
    "https://www.aitimes.com/news/articleView.html?idxno=217365",
-   "https://www.aitimes.com/news/articleView.html?idxno=217352"
+   "https://www.aitimes.com/news/articleView.html?idxno=217352",
+   "https://the-decoder.com/?p=42846",
+   "https://www.marktechpost.com/?p=83903",
+   "https://www.marktechpost.com/?p=83900",
+   "https://www.aitimes.com/news/articleView.html?idxno=217397"
   ],
   "providers": [
    "claude-sonnet-5-5",
