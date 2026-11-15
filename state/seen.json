@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-14T21:00:01+00:00",
+ "updated_at": "2026-11-15T21:00:01+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1239,7 +1239,9 @@
    "chatrlabs/Qwen-Image-2.1-Uncensored-Omni-Quantized",
    "higurashi-ai/Haru-4B",
    "adventists-ai/Sophon-Realtime-v1",
-   "meituan-longcat/LongCat-2.5"
+   "meituan-longcat/LongCat-2.5",
+   "ConceptCountry/qwen-concept-27b",
+   "pyannote/speaker-diarization-community-1"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -3572,7 +3574,11 @@
    "https://the-decoder.com/?p=42846",
    "https://www.marktechpost.com/?p=83903",
    "https://www.marktechpost.com/?p=83900",
-   "https://www.aitimes.com/news/articleView.html?idxno=217397"
+   "https://www.aitimes.com/news/articleView.html?idxno=217397",
+   "https://simonwillison.net/2026/Nov/14/datasette-llm/",
+   "https://the-decoder.com/?p=42881",
+   "https://www.marktechpost.com/?p=83906",
+   "https://www.aitimes.com/news/articleView.html?idxno=217408"
   ],
   "providers": [
    "claude-sonnet-5-5",
