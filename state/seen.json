@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-20T21:00:03+00:00",
+ "updated_at": "2026-11-21T21:00:01+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1306,7 +1306,9 @@
    "inclusionAI/LingSante-Pulse-1.0",
    "Sentinel7/h3",
    "RadixArk/DaisyRose-27B",
-   "thinkingmachines/Inkling-2-Mini"
+   "thinkingmachines/Inkling-2-Mini",
+   "allenai/LitAgent-Joint-SFT-9B-lg7eae-2n",
+   "allenai/ACE2.5-ERA5"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -1428,7 +1430,14 @@
    "vllm-project/vllm@v0.34.0",
    "flashinfer-ai/flashinfer@v0.7.5",
    "NVIDIA/TensorRT-LLM@v1.3.0",
-   "flashinfer-ai/flashinfer@v0.7.5.post1"
+   "flashinfer-ai/flashinfer@v0.7.5.post1",
+   "huggingface/transformers@v5.24.0",
+   "ollama/ollama@v0.40.17",
+   "LMCache/LMCache@v0.5.8rc3-xpu",
+   "LMCache/LMCache@v0.5.8rc3-rocm-torch210",
+   "LMCache/LMCache@v0.5.8rc3-rocm",
+   "LMCache/LMCache@v0.5.8rc3-rbln",
+   "LMCache/LMCache@v0.5.8rc3"
   ],
   "papers": [
    "arxiv:2610.04198",
@@ -3266,7 +3275,12 @@
    "arxiv:2611.25091",
    "arxiv:2611.25736",
    "arxiv:2611.25361",
-   "arxiv:2611.25078"
+   "arxiv:2611.25078",
+   "arxiv:2611.25567",
+   "arxiv:2611.26286",
+   "arxiv:2611.23257",
+   "arxiv:2611.24576",
+   "arxiv:2611.24098"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -3915,7 +3929,16 @@
    "https://www.aitimes.com/news/articleView.html?idxno=217599",
    "https://www.aitimes.com/news/articleView.html?idxno=217604",
    "https://www.aitimes.com/news/articleView.html?idxno=217549",
-   "https://www.aitimes.com/news/articleView.html?idxno=217548"
+   "https://www.aitimes.com/news/articleView.html?idxno=217548",
+   "https://simonwillison.net/2026/Nov/20/llm-gemini/",
+   "https://the-decoder.com/?p=43162",
+   "https://the-decoder.com/?p=43157",
+   "https://the-decoder.com/?p=43149",
+   "https://the-decoder.com/?p=43145",
+   "https://www.marktechpost.com/?p=84027",
+   "https://www.marktechpost.com/?p=84023",
+   "https://www.aitimes.com/news/articleView.html?idxno=217649",
+   "https://www.aitimes.com/news/articleView.html?idxno=217648"
   ],
   "providers": [
    "claude-sonnet-5-5",
