@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-21T21:00:01+00:00",
+ "updated_at": "2026-11-22T21:00:01+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1308,7 +1308,10 @@
    "RadixArk/DaisyRose-27B",
    "thinkingmachines/Inkling-2-Mini",
    "allenai/LitAgent-Joint-SFT-9B-lg7eae-2n",
-   "allenai/ACE2.5-ERA5"
+   "allenai/ACE2.5-ERA5",
+   "inclusionAI/LingSante-3.1-air-VL",
+   "inclusionAI/LingSante-3.1-flash",
+   "SulphurAI/Sulphur-3"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -3280,7 +3283,8 @@
    "arxiv:2611.26286",
    "arxiv:2611.23257",
    "arxiv:2611.24576",
-   "arxiv:2611.24098"
+   "arxiv:2611.24098",
+   "arxiv:2611.21885"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -3938,7 +3942,13 @@
    "https://www.marktechpost.com/?p=84027",
    "https://www.marktechpost.com/?p=84023",
    "https://www.aitimes.com/news/articleView.html?idxno=217649",
-   "https://www.aitimes.com/news/articleView.html?idxno=217648"
+   "https://www.aitimes.com/news/articleView.html?idxno=217648",
+   "https://simonwillison.net/2026/Nov/21/muru/",
+   "https://the-decoder.com/?p=43193",
+   "https://www.marktechpost.com/?p=84047",
+   "https://www.marktechpost.com/?p=84041",
+   "https://www.aitimes.com/news/articleView.html?idxno=217656",
+   "https://www.aitimes.com/news/articleView.html?idxno=217655"
   ],
   "providers": [
    "claude-sonnet-5-5",
