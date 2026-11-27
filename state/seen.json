@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-26T21:00:01+00:00",
+ "updated_at": "2026-11-27T21:00:02+00:00",
  "buckets": [
   "github_releases/Dao-AILab/flash-attention",
   "github_releases/LMCache/LMCache",
@@ -1341,7 +1341,10 @@
    "microsoft/CogACT2-RoboTwin-Clean",
    "microsoft/CogACT2-LIBERO",
    "inclusionAI/Ming-Image-0.2-Design",
-   "kandinskylab/Kandinsky-ImageSR-2.0"
+   "kandinskylab/Kandinsky-ImageSR-2.0",
+   "tencent/Hy-Embodied-Apexio-1.0",
+   "ai-sage/GigaChat4-708B-A41B",
+   "OpenUncensored/Inkling-2-Mini-Uncensored"
   ],
   "github_releases": [
    "vllm-project/vllm@v0.31.0",
@@ -3517,7 +3520,20 @@
    "arxiv:2611.33691",
    "arxiv:2611.33679",
    "arxiv:2611.33510",
-   "arxiv:2611.34630"
+   "arxiv:2611.34630",
+   "arxiv:2611.34051",
+   "arxiv:2611.34232",
+   "arxiv:2611.31619",
+   "arxiv:2611.34813",
+   "arxiv:2611.34457",
+   "arxiv:2611.34290",
+   "arxiv:2611.34693",
+   "arxiv:2611.34852",
+   "arxiv:2611.28732",
+   "arxiv:2611.34079",
+   "arxiv:2611.33922",
+   "arxiv:2611.34675",
+   "arxiv:2611.32820"
   ],
   "news": [
    "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
@@ -4220,7 +4236,16 @@
    "https://simonwillison.net/2026/Nov/25/datasette-charts/",
    "https://www.aitimes.com/news/articleView.html?idxno=217835",
    "https://www.aitimes.com/news/articleView.html?idxno=217826",
-   "https://www.aitimes.com/news/articleView.html?idxno=217818"
+   "https://www.aitimes.com/news/articleView.html?idxno=217818",
+   "https://the-decoder.com/?p=43355",
+   "https://www.marktechpost.com/?p=84097",
+   "https://www.marktechpost.com/?p=84093",
+   "https://www.aitimes.com/news/articleView.html?idxno=217872",
+   "https://www.aitimes.com/news/articleView.html?idxno=217863",
+   "https://www.aitimes.com/news/articleView.html?idxno=217868",
+   "https://www.aitimes.com/news/articleView.html?idxno=217864",
+   "https://www.aitimes.com/news/articleView.html?idxno=217847",
+   "https://www.aitimes.com/news/articleView.html?idxno=217858"
   ],
   "providers": [
    "claude-sonnet-5-5",
